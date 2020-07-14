@@ -2,46 +2,104 @@ import CasePaths
 import Combine
 import ComposableArchitecture
 import SwiftUI
+import TuistComposableArchitectureSupport
 
-public typealias RecipeListState = ()
+public struct RecipeListState {
+    var recipes: [Recipe] = []
+    var loadingRecipes: Bool = false
+}
 
-public enum RecipeListAction: Equatable {}
+public enum RecipeListAction: Equatable {
+    case recipes
+    case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
+}
 
-public typealias RecipeListEnvironment = Void
+public struct RecipeListEnvironment {
+    let cookbookClient: CookbookClient
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+}
 
-public func recipelistReducer(
-    state: inout RecipeListState,
-    action: RecipeListAction,
-    environment: RecipeListEnvironment
-) -> [Effect<RecipeListAction, Never>] {
+let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
     switch action {
+    case .recipes:
+        state.loadingRecipes = true
         
+        return environment.cookbookClient
+            .recipes()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map(RecipeListAction.recipesResponse)
+    case let .recipesResponse(.success(recipes)):
+        state.recipes = recipes
+        state.loadingRecipes = false
+        
+        return .none
+    case let .recipesResponse(.failure(error)):
+        // TODO: Handle error
+        state.loadingRecipes = false
+        
+        return .none
     }
 }
 
 public struct RecipeListView: View {
     struct State: Equatable {
-        
+        var recipes: [Recipe]
     }
+    
+    enum Action {
+        case recipes
+    }
+    
     let store: Store<RecipeListState, RecipeListAction>
     
     public var body: some View {
         WithViewStore(
             self.store.scope(state: State.init(recipelistState:), action: { $0 })
-        ) { store in
-            Text("RecipeList")
+        ) { viewStore in
+            List {
+                ForEach(viewStore.recipes) { recipe in
+                    Text(recipe.name)
+                }
+            }.onAppear(perform: { viewStore.send(.recipes) })
         }
     }
 }
 
 extension RecipeListView.State {
     init(recipelistState: RecipeListState) {
-        
+        recipes = recipelistState.recipes
+    }
+}
+
+extension RecipeListAction {
+    init(action: RecipeListView.Action) {
+        switch action {
+        case .recipes:
+            self = .recipes
+        }
     }
 }
 
 struct RecipeList_Previews: PreviewProvider {
     static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+        RecipeListView(
+            store: Store(
+                initialState: RecipeListState(),
+                reducer: recipeListReducer,
+                environment: RecipeListEnvironment(
+                    cookbookClient: .mock(
+                        recipes: {
+                            Effect(
+                                value: [
+                                    Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
+                                ]
+                            )
+                    }
+                    ),
+                    mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+                )
+            )
+        )
     }
 }

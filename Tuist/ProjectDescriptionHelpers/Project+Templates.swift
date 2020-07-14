@@ -32,10 +32,7 @@ extension Project {
             name: name,
             product: .framework,
             platform: platform,
-            dependencies: dependencies + [
-                .package(product: "ComposableArchitecture"),
-                .package(product: "CasePaths"),
-            ]
+            dependencies: dependencies
         )
     }
 
@@ -48,8 +45,10 @@ extension Project {
             name: name,
             platform: platform,
             dependencies: dependencies + [
-                .package(product: "ComposableArchitecture"),
-                .package(product: "CasePaths"),
+                .project(
+                    target: "TuistComposableArchitectureSupport",
+                    path: .relativeToRoot("Projects/TuistComposableArchitectureSupport")
+                )
             ]
         )
     }

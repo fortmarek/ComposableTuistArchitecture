@@ -3,5 +3,8 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "TuistComposableArchitectureSupport",
-    dependencies: []
+    dependencies: [
+        .package(product: "ComposableArchitecture"),
+        .package(product: "CasePaths"),
+    ]
 )

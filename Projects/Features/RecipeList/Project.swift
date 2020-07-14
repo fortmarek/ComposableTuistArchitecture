@@ -1,4 +1,4 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.framework(name: "RecipeList", platform: .iOS, dependencies: [])
+let project = Project.feature(name: "RecipeList")

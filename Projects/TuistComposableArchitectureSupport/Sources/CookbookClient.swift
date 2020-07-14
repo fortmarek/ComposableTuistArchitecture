@@ -2,7 +2,19 @@ import Foundation
 import Combine
 import ComposableArchitecture
 
-public struct Recipe: Codable, Identifiable {
+public struct Recipe: Codable, Identifiable, Equatable {
+    public init(
+        id: String,
+        name: String,
+        duration: Int,
+        score: Int
+    ) {
+        self.id = id
+        self.name = name
+        self.duration = duration
+        self.score = score
+    }
+    
     public let id: String
     public let name: String
     public let duration: Int
