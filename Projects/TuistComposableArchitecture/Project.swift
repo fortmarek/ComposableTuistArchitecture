@@ -9,12 +9,16 @@ let project = Project.app(
             requirement: .upToNextMajor(from: "0.6.0")
         ),
     ],
-    platform: .iOS,
     dependencies: [
         .project(
             target: "TuistComposableArchitectureKit",
             path: .relativeToManifest("../TuistComposableArchitectureKit")
         ),
+        .project(
+            target: "RecipeList",
+            path: .relativeToRoot("Projects/Features/RecipeList")
+        ),
         .package(product: "ComposableArchitecture"),
+        .package(product: "CasePaths"),
     ]
 )

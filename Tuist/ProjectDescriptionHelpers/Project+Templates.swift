@@ -1,11 +1,12 @@
 import ProjectDescription
 
 extension Project {
+    public static let platform: Platform = .iOS
     
     public static func app(
         name: String,
         packages: [Package] = [],
-        platform: Platform,
+        platform: Platform = platform,
         dependencies: [TargetDependency] = []
     ) -> Project {
         return self.project(
@@ -24,14 +25,32 @@ extension Project {
     
     public static func framework(
         name: String,
-        platform: Platform,
+        platform: Platform = platform,
         dependencies: [TargetDependency] = []
     ) -> Project {
         return self.project(
             name: name,
             product: .framework,
             platform: platform,
-            dependencies: dependencies
+            dependencies: dependencies + [
+                .package(product: "ComposableArchitecture"),
+                .package(product: "CasePaths"),
+            ]
+        )
+    }
+
+    public static func feature(
+        name: String,
+        platform: Platform = platform,
+        dependencies: [TargetDependency] = []
+    ) -> Project {
+        return self.framework(
+            name: name,
+            platform: platform,
+            dependencies: dependencies + [
+                .package(product: "ComposableArchitecture"),
+                .package(product: "CasePaths"),
+            ]
         )
     }
     
@@ -39,7 +58,7 @@ extension Project {
         name: String,
         packages: [Package] = [],
         product: Product,
-        platform: Platform,
+        platform: Platform = platform,
         dependencies: [TargetDependency] = [],
         infoPlist: [String: InfoPlist.Value] = [:]
     ) -> Project {
