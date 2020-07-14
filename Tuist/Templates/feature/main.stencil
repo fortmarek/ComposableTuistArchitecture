@@ -1,0 +1,49 @@
+import CasePaths
+import Combine
+import ComposableArchitecture
+import SwiftUI
+
+public typealias {{ name }}State = ()
+
+public enum {{ name }}Action: Equatable {}
+
+public typealias {{ name }}Environment = Void
+
+public func {{ name|lowercase }}Reducer(
+    state: inout {{ name }}State,
+    action: {{ name }}Action,
+    environment: {{ name }}Environment
+) -> [Effect<{{ name }}Action>] {
+    switch action {
+        
+    }
+}
+
+public struct {{ name }}View: View {
+    struct State: Equatable {
+        
+    }
+    let store: Store<{{ name }}State, {{ name }}Action>
+    @ObservedObject var viewStore: ViewStore<State>
+    
+    public init(store: Store<{{ name }}State, {{ name }}Action>) {
+        self.store = store
+        self.viewStore = self.store
+            .scope(value: State.init({{ name|lowercase }}State:), action: { $0 })
+            .view
+        
+    }
+    
+    public var body: some View {
+    WithViewStore(
+        self.store.scope(value: State.init({{ name|lowercase }}State:), action: { $0 })
+    ) { store in
+        Text("{{ name }}")
+    }
+}
+
+extension {{ name }}View.State {
+    init({{ name|lowercase }}State: {{ name }}State) {
+        
+    }
+}
