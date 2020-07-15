@@ -40,7 +40,7 @@ struct RecipeListView: View {
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
                     trailing: NavigationLink(
-                        destination: Text("olla")
+                        destination: makeAddRecipeView(store: self.store.scope(state: { $0.addRecipe }, action: RecipeListFeatureAction.addRecipe))
                     ) {
                         Image(uiImage: Asset.icAdd.image)
                     }

@@ -24,8 +24,8 @@ public enum RecipeListFeatureAction {
 
 public struct RecipeListFeatureState {
     public init(
-        recipeList: RecipeListState,
-        addRecipe: AddRecipeState
+        recipeList: RecipeListState = RecipeListState(),
+        addRecipe: AddRecipeState = AddRecipeState()
     ) {
         self.recipeList = recipeList
         self.addRecipe = addRecipe

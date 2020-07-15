@@ -2,7 +2,7 @@ import ComposableArchitecture
 
 public struct AddRecipeState {
     public init(
-        name: String
+        name: String = ""
     ) {
         self.name = name
     }

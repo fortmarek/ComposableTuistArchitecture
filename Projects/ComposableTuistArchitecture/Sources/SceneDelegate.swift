@@ -26,8 +26,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = UIHostingController(
                 rootView: makeRecipeListView(
                     store: Store(
-                        initialState: RecipeListState(),
-                        reducer: recipeListReducer.debug(),
+                        initialState: RecipeListFeatureState(),
+                        reducer: recipeListFeatureReducer.debug(),
                         environment: RecipeListEnvironment(
                             cookbookClient: .live,
                             mainQueue: DispatchQueue.main.eraseToAnyScheduler()
