@@ -3,8 +3,9 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
+import AddRecipe
 
-public func makeRecipeListView(store: Store<RecipeListState, RecipeListAction>) -> some View {
+public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFeatureAction>) -> some View {
     RecipeListView(store: store)
 }
 
@@ -18,11 +19,13 @@ struct RecipeListView: View {
         case recipes
     }
 
-    let store: Store<RecipeListState, RecipeListAction>
+    let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
     
     var body: some View {
         WithViewStore(
-            self.store.scope(state: State.init, action: RecipeListAction.init)
+            self.store
+                .scope(state: RecipeListState.init, action: RecipeListFeatureAction.recipeList)
+                .scope(state: State.init, action: RecipeListAction.init)
         ) { viewStore in
             NavigationView {
                 List {
@@ -51,9 +54,9 @@ struct RecipeListView: View {
 }
 
 extension RecipeListView.State {
-    init(recipelistState: RecipeListState) {
-        recipes = recipelistState.recipes
-        isActivityIndicatorHidden = recipelistState.isLoadingRecipes
+    init(recipeListState: RecipeListState) {
+        recipes = recipeListState.recipes
+        isActivityIndicatorHidden = recipeListState.isLoadingRecipes
     }
 }
 
@@ -69,14 +72,19 @@ extension RecipeListAction {
 struct RecipeList_Previews: PreviewProvider {
     static var previews: some View {
         RecipeListView(
-            store: Store(
-                initialState: RecipeListState(
-                    recipes: [
-                        Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
-                    ],
-                    isLoadingRecipes: false
+            store: Store<RecipeListFeatureState, RecipeListFeatureAction>(
+                initialState: RecipeListFeatureState(
+                    recipeList: RecipeListState(
+                        recipes: [
+                            Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
+                        ],
+                        isLoadingRecipes: false
+                    ),
+                    addRecipe: AddRecipeState(
+                        name: ""
+                    )
                 ),
-                reducer: recipeListReducer,
+                reducer: recipeListFeatureReducer,
                 environment: RecipeListEnvironment(
                     cookbookClient: .mock(
                         recipes: {

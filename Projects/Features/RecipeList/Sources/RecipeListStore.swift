@@ -2,6 +2,7 @@ import Foundation
 import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
+import AddRecipe
 
 public struct RecipeListState {
     public init(
@@ -54,5 +55,11 @@ public let recipeListReducer = Reducer<RecipeListState, RecipeListAction, Recipe
         state.isLoadingRecipes = false
         
         return .none
+    }
+}
+
+extension RecipeListState {
+    init(recipeListFeatureState: RecipeListFeatureState) {
+        self = recipeListFeatureState.recipeList
     }
 }

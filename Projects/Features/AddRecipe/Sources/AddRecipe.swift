@@ -7,7 +7,7 @@ public func makeAddRecipeView(store: Store<AddRecipeState, AddRecipeAction>) -> 
     AddRecipeView(store: store)
 }
 
-public struct AddRecipeView: View {
+struct AddRecipeView: View {
     struct State: Equatable {
         let name: String
     }
@@ -18,7 +18,7 @@ public struct AddRecipeView: View {
     
     let store: Store<AddRecipeState, AddRecipeAction>
     
-    public var body: some View {
+    var body: some View {
         WithViewStore(
             self.store.scope(state: State.init, action: AddRecipeAction.init)
         ) { store in
