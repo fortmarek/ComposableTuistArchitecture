@@ -18,11 +18,7 @@ public struct {{ name }}Environment {
     }
 }
 
-public func {{ name|lowercase }}Reducer(
-    state: inout {{ name }}State,
-    action: {{ name }}Action,
-    environment: {{ name }}Environment
-) -> [Effect<{{ name }}Action, Never>] {
+public let {{ name|lowercase }}Reducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnvironment> { state, action, environment in
     switch action {
         
     }

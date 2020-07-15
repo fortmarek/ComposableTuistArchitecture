@@ -17,7 +17,7 @@ struct RecipeListView: View {
     enum Action {
         case recipes
     }
-    
+
     let store: Store<RecipeListState, RecipeListAction>
     
     var body: some View {
