@@ -2,16 +2,24 @@ import ComposableArchitecture
 
 public struct AddRecipeState {
     public init(
-        name: String = ""
+        name: String = "",
+        currentIngredience: String = "",
+        ingrediences: [String] = []
     ) {
         self.name = name
+        self.currentIngredience = currentIngredience
+        self.ingrediences = ingrediences
     }
     
     public var name: String
+    public var currentIngredience: String
+    public var ingrediences: [String]
 }
 
 public enum AddRecipeAction: Equatable {
     case nameChanged(String)
+    case currentIngredienceChanged(String)
+    case addIngredience
 }
 
 public struct AddRecipeEnvironment {
@@ -26,6 +34,12 @@ public let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipe
     switch action {
     case let .nameChanged(name):
         state.name = name
-        return .none
+    case let .currentIngredienceChanged(currentIngredience):
+        state.currentIngredience = currentIngredience
+    case .addIngredience:
+        state.ingrediences.append(state.currentIngredience)
+        state.currentIngredience = ""
     }
+    
+    return .none
 }
