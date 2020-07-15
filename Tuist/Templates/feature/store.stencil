@@ -1,3 +1,5 @@
+import ComposableArchitecture
+
 public struct {{ name }}State {
     public init(
         
@@ -20,7 +22,7 @@ public func {{ name|lowercase }}Reducer(
     state: inout {{ name }}State,
     action: {{ name }}Action,
     environment: {{ name }}Environment
-) -> [Effect<{{ name }}Action>] {
+) -> [Effect<{{ name }}Action, Never>] {
     switch action {
         
     }

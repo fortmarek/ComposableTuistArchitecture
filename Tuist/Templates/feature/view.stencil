@@ -19,10 +19,11 @@ public struct {{ name }}View: View {
     let store: Store<{{ name }}State, {{ name }}Action>
     
     public var body: some View {
-    WithViewStore(
-        self.store.scope(value: State.init, action: Action.init)
-    ) { store in
-        Text("{{ name }}")
+        WithViewStore(
+            self.store.scope(state: State.init, action: {{ name }Action.init)
+        ) { store in
+            Text("{{ name }}")
+        }
     }
 }
 
@@ -32,7 +33,7 @@ extension {{ name }}View.State {
     }
 }
 
-extension {{ name }}}Action {
+extension {{ name }}Action {
     init(action: {{ name }}View.Action) {
         switch action {
             

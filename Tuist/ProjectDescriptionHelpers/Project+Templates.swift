@@ -9,6 +9,7 @@ extension Project {
         platform: Platform = platform,
         resources: [FileElement]? = nil,
         actions: [TargetAction] = [],
+        features: [String] = [],
         dependencies: [TargetDependency] = []
     ) -> Project {
         return project(
@@ -18,7 +19,12 @@ extension Project {
             platform: platform,
             resources: resources,
             actions: actions,
-            dependencies: dependencies,
+            dependencies: dependencies + features.map {
+                .project(
+                    target: $0,
+                    path: .relativeToRoot("Projects/Features/\($0)")
+                )
+            },
             infoPlist: [
                 "CFBundleShortVersionString": "1.0",
                 "CFBundleVersion": "1",

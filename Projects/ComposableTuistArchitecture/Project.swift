@@ -9,14 +9,14 @@ let project = Project.app(
             requirement: .upToNextMajor(from: "0.6.0")
         ),
     ],
+    features: [
+        "RecipeList",
+        "AddRecipe",
+    ],
     dependencies: [
         .project(
             target: "ComposableTuistArchitectureKit",
             path: .relativeToRoot("Projects/ComposableTuistArchitectureKit")
-        ),
-        .project(
-            target: "RecipeList",
-            path: .relativeToRoot("Projects/Features/RecipeList")
         ),
         .package(product: "ComposableArchitecture"),
         .package(product: "CasePaths"),
