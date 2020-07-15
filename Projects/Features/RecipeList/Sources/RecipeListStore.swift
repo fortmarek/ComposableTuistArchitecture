@@ -4,40 +4,28 @@ import ComposableArchitecture
 import Combine
 import AddRecipe
 
-public struct RecipeListState {
-    public init(
-        recipes: [Recipe] = [],
-        isLoadingRecipes: Bool = false
-    ) {
-        self.recipes = recipes
-        self.isLoadingRecipes = isLoadingRecipes
-    }
-    
-    var recipes: [Recipe] = []
-    var isLoadingRecipes: Bool = false
-}
+typealias RecipeListState = (
+    recipes: [Recipe],
+    hasLoadedRecipes: Bool,
+    isLoadingRecipes: Bool
+)
 
 public enum RecipeListAction: Equatable {
     case recipes
     case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
 }
 
-public struct RecipeListEnvironment {
-    public init(
-        cookbookClient: CookbookClient,
-        mainQueue: AnySchedulerOf<DispatchQueue>
-    ) {
-        self.cookbookClient = cookbookClient
-        self.mainQueue = mainQueue
-    }
-    
+struct RecipeListEnvironment {
     let cookbookClient: CookbookClient
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-public let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
+let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
     switch action {
     case .recipes:
+        guard !state.hasLoadedRecipes else { return .none }
+        state.hasLoadedRecipes = true
+        
         state.isLoadingRecipes = true
         
         return environment.cookbookClient
@@ -55,11 +43,5 @@ public let recipeListReducer = Reducer<RecipeListState, RecipeListAction, Recipe
         state.isLoadingRecipes = false
         
         return .none
-    }
-}
-
-extension RecipeListState {
-    init(recipeListFeatureState: RecipeListFeatureState) {
-        self = recipeListFeatureState.recipeList
     }
 }

@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     store: Store(
                         initialState: RecipeListFeatureState(),
                         reducer: recipeListFeatureReducer.debug(),
-                        environment: RecipeListEnvironment(
+                        environment: RecipeListFeatureEnvironment(
                             cookbookClient: .live,
                             mainQueue: DispatchQueue.main.eraseToAnyScheduler()
                         )

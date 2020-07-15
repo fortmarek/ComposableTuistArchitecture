@@ -24,7 +24,7 @@ struct RecipeListView: View {
     var body: some View {
         WithViewStore(
             self.store
-                .scope(state: RecipeListState.init, action: RecipeListFeatureAction.recipeList)
+                .scope(state: \.recipeList, action: RecipeListFeatureAction.recipeList)
                 .scope(state: State.init, action: RecipeListAction.init)
         ) { viewStore in
             NavigationView {
@@ -36,7 +36,7 @@ struct RecipeListView: View {
                         }
                     }
                 }
-                .onAppear(perform: { viewStore.send(.recipes) })
+                .onAppear { viewStore.send(.recipes) }
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
                     trailing: NavigationLink(
@@ -74,23 +74,19 @@ struct RecipeList_Previews: PreviewProvider {
         RecipeListView(
             store: Store<RecipeListFeatureState, RecipeListFeatureAction>(
                 initialState: RecipeListFeatureState(
-                    recipeList: RecipeListState(
-                        recipes: [
-                            Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
-                        ],
-                        isLoadingRecipes: false
-                    ),
-                    addRecipe: AddRecipeState(
-                        name: ""
-                    )
+                    recipes: [
+                        Recipe(id: "a", name: "Spaghetti", description: "", ingredients: [], duration: 20, score: 2, info: "")
+                    ],
+                    isLoadingRecipes: false,
+                    addRecipe: AddRecipeFeatureState()
                 ),
                 reducer: recipeListFeatureReducer,
-                environment: RecipeListEnvironment(
+                environment: RecipeListFeatureEnvironment(
                     cookbookClient: .mock(
                         recipes: {
                             Effect(
                                 value: [
-                                    Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
+                                    Recipe(id: "a", name: "Spaghetti", description: "", ingredients: ["Banana"], duration: 20, score: 2, info: "")
                                 ]
                             )
                     }

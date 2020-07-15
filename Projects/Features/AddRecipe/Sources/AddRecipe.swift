@@ -3,52 +3,59 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 
-public func makeAddRecipeView(store: Store<AddRecipeState, AddRecipeAction>) -> some View {
+public func makeAddRecipeView(store: Store<AddRecipeFeatureState, AddRecipeFeatureAction>) -> some View {
     AddRecipeView(store: store)
 }
 
 struct AddRecipeView: View {
     struct State: Equatable {
         let name: String
-        let ingrediences: [String]
-        let currentIngredience: String
+        let ingredients: [String]
+        let currentIngredient: String
     }
     
     enum Action {
         case nameChanged(String)
-        case addIngredienceButtonTapped
-        case currentIngredienceChanged(String)
+        case addIngredientButtonTapped
+        case currentIngredientChanged(String)
+        case addRecipeButtonTapped
     }
     
-    let store: Store<AddRecipeState, AddRecipeAction>
+    let store: Store<AddRecipeFeatureState, AddRecipeFeatureAction>
     
     var body: some View {
         WithViewStore(
-            self.store.scope(state: State.init, action: AddRecipeAction.init)
+            self.store
+                .scope(state: { $0.addRecipe }, action: AddRecipeFeatureAction.init)
+                .scope(state: State.init, action: AddRecipeAction.init)
         ) { store in
-            VStack {
-                VStack(alignment: .leading) {
-                    Text("Name of recipe")
-                    TextField(store.name, text: store.binding(get: { $0.name }, send: Action.nameChanged))
-                        .border(Color.black, width: 1)
-                }
-                .padding()
-                VStack(alignment: .leading) {
-                    Text("Ingrediences")
-                    ForEach(store.ingrediences, id: \.self) {
-                        Text($0)
+            NavigationView {
+                VStack {
+                    VStack(alignment: .leading) {
+                        Text("Name of recipe")
+                        TextField(store.name, text: store.binding(get: { $0.name }, send: Action.nameChanged))
+                            .border(Color.black, width: 1)
                     }
-                    TextField(
-                        "Ingredience",
-                        text: store.binding(
-                            get: { $0.currentIngredience },
-                            send: Action.currentIngredienceChanged
+                    .padding()
+                    VStack(alignment: .leading) {
+                        Text("Ingredients")
+                        ForEach(store.ingredients, id: \.self) {
+                            Text($0)
+                        }
+                        TextField(
+                            "Ingredient",
+                            text: store.binding(
+                                get: { $0.currentIngredient },
+                                send: Action.currentIngredientChanged
+                            )
                         )
-                    )
-                    .border(Color.black, width: 1)
-                    Button("Add", action: { store.send(.addIngredienceButtonTapped) })
+                        .border(Color.black, width: 1)
+                        Button("Add", action: { store.send(.addIngredientButtonTapped) })
+                    }
+                    .padding()
                 }
-                .padding()
+                .navigationTitle("Add Recipe")
+                .navigationBarItems(trailing: Button("Add", action: { store.send(.addRecipeButtonTapped) }))
             }
         }
     }
@@ -57,8 +64,8 @@ struct AddRecipeView: View {
 extension AddRecipeView.State {
     init(state: AddRecipeState) {
         name = state.name
-        ingrediences = state.ingrediences
-        currentIngredience = state.currentIngredience
+        ingredients = state.ingredients
+        currentIngredient = state.currentIngredient
     }
 }
 
@@ -67,10 +74,12 @@ extension AddRecipeAction {
         switch action {
         case let .nameChanged(name):
             self = .nameChanged(name)
-        case let .currentIngredienceChanged(ingredience):
-            self = .currentIngredienceChanged(ingredience)
-        case .addIngredienceButtonTapped:
-            self = .addIngredience
+        case let .currentIngredientChanged(ingredient):
+            self = .currentIngredientChanged(ingredient)
+        case .addIngredientButtonTapped:
+            self = .addIngredient
+        case .addRecipeButtonTapped:
+            self = .addRecipe
         }
     }
 }
@@ -79,12 +88,11 @@ struct AddRecipe_Previews: PreviewProvider {
     static var previews: some View {
         AddRecipeView(
             store: Store(
-                initialState: AddRecipeState(
-                    name: ""
-                ),
-                reducer: addRecipeReducer,
-                environment: AddRecipeEnvironment(
-                    
+                initialState: AddRecipeFeatureState(),
+                reducer: addRecipeFeatureReducer,
+                environment: AddRecipeFeatureEnvironment(
+                    cookbookClient: .mock(),
+                    mainQueue: DispatchQueue.main.eraseToAnyScheduler()
                 )
             )
         )

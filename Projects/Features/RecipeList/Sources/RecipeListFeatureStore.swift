@@ -4,33 +4,68 @@ import ComposableArchitecture
 import Combine
 import AddRecipe
 
-public let recipeListFeatureReducer = Reducer.combine(
+public struct RecipeListFeatureEnvironment {
+    public init(
+        cookbookClient: CookbookClient,
+        mainQueue: AnySchedulerOf<DispatchQueue>
+    ) {
+        self.cookbookClient = cookbookClient
+        self.mainQueue = mainQueue
+    }
+    
+    let cookbookClient: CookbookClient
+    let mainQueue: AnySchedulerOf<DispatchQueue>
+}
+
+public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeListFeatureAction, RecipeListFeatureEnvironment>.combine(
   recipeListReducer.pullback(
-    state: \RecipeListFeatureState.recipeList,
+    state: \.recipeList,
     action: /RecipeListFeatureAction.recipeList,
-    environment: { $0 }
+    environment: {
+        RecipeListEnvironment(
+            cookbookClient: $0.cookbookClient,
+            mainQueue: $0.mainQueue
+        )
+    }
   ),
-  addRecipeReducer.pullback(
-    state: \RecipeListFeatureState.addRecipe,
+  addRecipeFeatureReducer.pullback(
+    state: \.addRecipe,
     action: /RecipeListFeatureAction.addRecipe,
-    environment: { _ in AddRecipeEnvironment() }
+    environment: {
+        AddRecipeFeatureEnvironment(
+            cookbookClient: $0.cookbookClient,
+            mainQueue: $0.mainQueue
+        )
+    }
   )
 )
 
 public enum RecipeListFeatureAction {
     case recipeList(RecipeListAction)
-    case addRecipe(AddRecipeAction)
+    case addRecipe(AddRecipeFeatureAction)
 }
 
 public struct RecipeListFeatureState {
     public init(
-        recipeList: RecipeListState = RecipeListState(),
-        addRecipe: AddRecipeState = AddRecipeState()
+        recipes: [Recipe] = [],
+        hasLoadedRecipes: Bool = false,
+        isLoadingRecipes: Bool = false,
+        addRecipe: AddRecipeFeatureState = AddRecipeFeatureState()
     ) {
-        self.recipeList = recipeList
+        self.recipes = recipes
+        self.hasLoadedRecipes = hasLoadedRecipes
+        self.isLoadingRecipes = isLoadingRecipes
         self.addRecipe = addRecipe
     }
     
-    var recipeList: RecipeListState
-    var addRecipe: AddRecipeState
+    var recipes: [Recipe]
+    var hasLoadedRecipes: Bool
+    var isLoadingRecipes: Bool
+    
+    var recipeList: RecipeListState {
+        get { (recipes, hasLoadedRecipes, isLoadingRecipes) }
+        set { (recipes, hasLoadedRecipes, isLoadingRecipes) = newValue }
+    }
+    
+    var addRecipe: AddRecipeFeatureState
 }
