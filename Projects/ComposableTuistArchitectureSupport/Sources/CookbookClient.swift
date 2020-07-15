@@ -7,7 +7,7 @@ public struct Recipe: Codable, Identifiable, Equatable {
         id: String,
         name: String,
         duration: Int,
-        score: Int
+        score: Double
     ) {
         self.id = id
         self.name = name
@@ -18,7 +18,7 @@ public struct Recipe: Codable, Identifiable, Equatable {
     public let id: String
     public let name: String
     public let duration: Int
-    public let score: Int
+    public let score: Double
 }
 
 public struct CookbookClient {
@@ -36,7 +36,7 @@ public extension CookbookClient {
             return URLSession.shared.dataTaskPublisher(for: url)
                 .map { data, _ in data }
                 .decode(type: [Recipe].self, decoder: jsonDecoder)
-                .mapError { _ in Failure() }
+                .mapError { error in Failure() }
                 .eraseToEffect()
         }
     )

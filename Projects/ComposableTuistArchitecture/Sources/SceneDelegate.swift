@@ -1,12 +1,19 @@
 import UIKit
 import SwiftUI
 import ComposableArchitecture
-import TuistComposableArchitectureSupport
+import ComposableTuistArchitectureSupport
+import RecipeList
+
+struct ContentView: View {
+    var body: some View {
+        Text("Hello, World!")
+    }
+}
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -16,31 +23,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-//            window.rootViewController = CounterViewController(store: Store(
-//                initialValue: CounterState(
-//                    count: 0,
-//                    alertNthPrime: nil,
-//                    isNthPrimeButtonDisabled: false
-//                ),
-//                reducer: with(
-//                    counterReducer,
-//                    logging
-//                ),
-//                environment: .live
-//                )
-//            )
-//            window.rootViewController = UIHostingController(
-//                    rootView: ContentView(
-//                      store: Store(
-//                        initialValue: AppState(),
-//                        reducer: with(
-//                          appReducer,
-//                          logging
-//                        ),
-//                        environment: .live
-//                      )
-//                    )
-//                  )
+            window.rootViewController = UIHostingController(
+                rootView: RecipeListView(
+                    store: Store(
+                        initialState: RecipeListState(),
+                        reducer: recipeListReducer.debug(),
+                        environment: RecipeListEnvironment(
+                            cookbookClient: .live,
+                            mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+                        )
+                    )
+                )
+            )
             self.window = window
             window.makeKeyAndVisible()
         }

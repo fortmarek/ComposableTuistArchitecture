@@ -1,5 +1,5 @@
 import UIKit
-import TuistComposableArchitectureKit
+import ComposableTuistArchitectureKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

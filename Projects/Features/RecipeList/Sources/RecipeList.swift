@@ -2,9 +2,17 @@ import CasePaths
 import Combine
 import ComposableArchitecture
 import SwiftUI
-import TuistComposableArchitectureSupport
+import ComposableTuistArchitectureSupport
 
 public struct RecipeListState {
+    public init(
+        recipes: [Recipe] = [],
+        isLoadingRecipes: Bool = false
+    ) {
+        self.recipes = recipes
+        self.isLoadingRecipes = isLoadingRecipes
+    }
+    
     var recipes: [Recipe] = []
     var isLoadingRecipes: Bool = false
 }
@@ -15,11 +23,19 @@ public enum RecipeListAction: Equatable {
 }
 
 public struct RecipeListEnvironment {
+    public init(
+        cookbookClient: CookbookClient,
+        mainQueue: AnySchedulerOf<DispatchQueue>
+    ) {
+        self.cookbookClient = cookbookClient
+        self.mainQueue = mainQueue
+    }
+    
     let cookbookClient: CookbookClient
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
+public let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
     switch action {
     case .recipes:
         state.isLoadingRecipes = true
@@ -53,6 +69,10 @@ public struct RecipeListView: View {
     }
     
     let store: Store<RecipeListState, RecipeListAction>
+    
+    public init(store: Store<RecipeListState, RecipeListAction>) {
+        self.store = store
+    }
     
     public var body: some View {
         WithViewStore(

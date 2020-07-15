@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.app(
-    name: "TuistComposableArchitecture",
+    name: "ComposableTuistArchitecture",
     packages: [
         .remote(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
@@ -11,8 +11,8 @@ let project = Project.app(
     ],
     dependencies: [
         .project(
-            target: "TuistComposableArchitectureKit",
-            path: .relativeToManifest("../TuistComposableArchitectureKit")
+            target: "ComposableTuistArchitectureKit",
+            path: .relativeToRoot("Projects/ComposableTuistArchitectureKit")
         ),
         .project(
             target: "RecipeList",

@@ -9,7 +9,7 @@ extension Project {
         platform: Platform = platform,
         dependencies: [TargetDependency] = []
     ) -> Project {
-        return self.project(
+        return project(
             name: name,
             packages: packages,
             product: .app,
@@ -18,7 +18,20 @@ extension Project {
             dependencies,
             infoPlist: [
                 "CFBundleShortVersionString": "1.0",
-                "CFBundleVersion": "1"
+                "CFBundleVersion": "1",
+                "UIMainStoryboardFile": "",
+                "UILaunchStoryboardName": "LaunchScreen",
+                "UIApplicationSceneManifest": [
+                    "UIApplicationSupportsMultipleScenes": false,
+                    "UISceneConfigurations": [
+                        "UIWindowSceneSessionRoleApplication": [
+                            [
+                                "UISceneConfigurationName": "Default Configuration",
+                                "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+                            ]
+                        ]
+                    ]
+                ]
             ]
         )
     }
@@ -28,14 +41,14 @@ extension Project {
         platform: Platform = platform,
         dependencies: [TargetDependency] = []
     ) -> Project {
-        return self.project(
+        return project(
             name: name,
             product: .framework,
             platform: platform,
             dependencies: dependencies
         )
     }
-
+    
     public static func feature(
         name: String,
         platform: Platform = platform,
@@ -46,8 +59,8 @@ extension Project {
             platform: platform,
             dependencies: dependencies + [
                 .project(
-                    target: "TuistComposableArchitectureSupport",
-                    path: .relativeToRoot("Projects/TuistComposableArchitectureSupport")
+                    target: "ComposableTuistArchitectureSupport",
+                    path: .relativeToRoot("Projects/ComposableTuistArchitectureSupport")
                 )
             ]
         )

@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "TuistComposableArchitectureSupport",
+    name: "ComposableTuistArchitectureSupport",
     dependencies: [
         .package(product: "ComposableArchitecture"),
         .package(product: "CasePaths"),
