@@ -7,6 +7,8 @@ extension Project {
         name: String,
         packages: [Package] = [],
         platform: Platform = platform,
+        resources: [FileElement]? = nil,
+        actions: [TargetAction] = [],
         dependencies: [TargetDependency] = []
     ) -> Project {
         return project(
@@ -14,8 +16,9 @@ extension Project {
             packages: packages,
             product: .app,
             platform: platform,
-            dependencies:
-            dependencies,
+            resources: resources,
+            actions: actions,
+            dependencies: dependencies,
             infoPlist: [
                 "CFBundleShortVersionString": "1.0",
                 "CFBundleVersion": "1",
@@ -39,12 +42,16 @@ extension Project {
     public static func framework(
         name: String,
         platform: Platform = platform,
+        resources: [FileElement]? = nil,
+        actions: [TargetAction] = [],
         dependencies: [TargetDependency] = []
     ) -> Project {
         return project(
             name: name,
             product: .framework,
             platform: platform,
+            resources: resources,
+            actions: actions,
             dependencies: dependencies
         )
     }
@@ -52,11 +59,15 @@ extension Project {
     public static func feature(
         name: String,
         platform: Platform = platform,
+        resources: [FileElement]? = nil,
+        actions: [TargetAction] = [],
         dependencies: [TargetDependency] = []
     ) -> Project {
         return self.framework(
             name: name,
             platform: platform,
+            resources: resources,
+            actions: actions,
             dependencies: dependencies + [
                 .project(
                     target: "ComposableTuistArchitectureSupport",
@@ -71,6 +82,8 @@ extension Project {
         packages: [Package] = [],
         product: Product,
         platform: Platform = platform,
+        resources: [FileElement]? = nil,
+        actions: [TargetAction] = [],
         dependencies: [TargetDependency] = [],
         infoPlist: [String: InfoPlist.Value] = [:]
     ) -> Project {
@@ -85,7 +98,8 @@ extension Project {
                     bundleId: "io.tuist.\(name)",
                     infoPlist: .extendingDefault(with: infoPlist),
                     sources: ["Sources/**"],
-                    resources: [],
+                    resources: resources,
+                    actions: actions,
                     dependencies: dependencies
                 ),
                 Target(

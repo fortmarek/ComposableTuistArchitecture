@@ -78,15 +78,19 @@ public struct RecipeListView: View {
         WithViewStore(
             self.store.scope(state: State.init, action: RecipeListAction.init)
         ) { viewStore in
-            List {
-                ForEach(viewStore.recipes) { recipe in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(recipe.name)
-                        Text("Duration: " + String(recipe.duration))
+            NavigationView {
+                List {
+                    ForEach(viewStore.recipes) { recipe in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(recipe.name)
+                            Text("Duration: " + String(recipe.duration))
+                        }
                     }
                 }
-            }.onAppear(perform: { viewStore.send(.recipes) })
-            
+                .onAppear(perform: { viewStore.send(.recipes) })
+                .navigationBarTitle("Recipes")
+                .navigationBarItems(trailing: Image(uiImage: Asset.icAdd.image))
+            }
             if viewStore.isActivityIndicatorHidden {
               ActivityIndicator()
             }
@@ -118,7 +122,7 @@ struct RecipeList_Previews: PreviewProvider {
                     recipes: [
                         Recipe(id: "a", name: "Spaghetti", duration: 20, score: 2)
                     ],
-                    isLoadingRecipes: true
+                    isLoadingRecipes: false
                 ),
                 reducer: recipeListReducer,
                 environment: RecipeListEnvironment(
