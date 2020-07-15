@@ -1,0 +1,57 @@
+import CasePaths
+import Combine
+import ComposableArchitecture
+import SwiftUI
+
+public func make{{ name }}View(store: Store<{{ name }}State, {{ name }}Action>) -> some View {
+    {{ name }}View(store: store)
+}
+
+public struct {{ name }}View: View {
+    struct State: Equatable {
+        
+    }
+    
+    enum Action {
+        
+    }
+    
+    let store: Store<{{ name }}State, {{ name }}Action>
+    
+    public var body: some View {
+    WithViewStore(
+        self.store.scope(value: State.init, action: Action.init)
+    ) { store in
+        Text("{{ name }}")
+    }
+}
+
+extension {{ name }}View.State {
+    init(state: {{ name }}State) {
+        
+    }
+}
+
+extension {{ name }}}Action {
+    init(action: {{ name }}View.Action) {
+        switch action {
+            
+        }
+    }
+}
+
+struct {{ name }}_Previews: PreviewProvider {
+    static var previews: some View {
+        {{ name }}View(
+            store: Store(
+                initialState: {{ name }}State(
+                    
+                ),
+                reducer: {{ name|lowercase }}Reducer,
+                environment: {{ name }}Environment(
+                    
+                )
+            )
+        )
+    }
+}

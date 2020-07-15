@@ -4,61 +4,11 @@ import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
 
-public struct RecipeListState {
-    public init(
-        recipes: [Recipe] = [],
-        isLoadingRecipes: Bool = false
-    ) {
-        self.recipes = recipes
-        self.isLoadingRecipes = isLoadingRecipes
-    }
-    
-    var recipes: [Recipe] = []
-    var isLoadingRecipes: Bool = false
+public func makeRecipeListView(store: Store<RecipeListState, RecipeListAction>) -> some View {
+    RecipeListView(store: store)
 }
 
-public enum RecipeListAction: Equatable {
-    case recipes
-    case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
-}
-
-public struct RecipeListEnvironment {
-    public init(
-        cookbookClient: CookbookClient,
-        mainQueue: AnySchedulerOf<DispatchQueue>
-    ) {
-        self.cookbookClient = cookbookClient
-        self.mainQueue = mainQueue
-    }
-    
-    let cookbookClient: CookbookClient
-    let mainQueue: AnySchedulerOf<DispatchQueue>
-}
-
-public let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnvironment> { state, action, environment in
-    switch action {
-    case .recipes:
-        state.isLoadingRecipes = true
-        
-        return environment.cookbookClient
-            .recipes()
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map(RecipeListAction.recipesResponse)
-    case let .recipesResponse(.success(recipes)):
-        state.recipes = recipes
-        state.isLoadingRecipes = false
-        
-        return .none
-    case let .recipesResponse(.failure(error)):
-        // TODO: Handle error
-        state.isLoadingRecipes = false
-        
-        return .none
-    }
-}
-
-public struct RecipeListView: View {
+struct RecipeListView: View {
     struct State: Equatable {
         var recipes: [Recipe]
         var isActivityIndicatorHidden: Bool
@@ -70,11 +20,7 @@ public struct RecipeListView: View {
     
     let store: Store<RecipeListState, RecipeListAction>
     
-    public init(store: Store<RecipeListState, RecipeListAction>) {
-        self.store = store
-    }
-    
-    public var body: some View {
+    var body: some View {
         WithViewStore(
             self.store.scope(state: State.init, action: RecipeListAction.init)
         ) { viewStore in
@@ -89,10 +35,16 @@ public struct RecipeListView: View {
                 }
                 .onAppear(perform: { viewStore.send(.recipes) })
                 .navigationBarTitle("Recipes")
-                .navigationBarItems(trailing: Image(uiImage: Asset.icAdd.image))
+                .navigationBarItems(
+                    trailing: NavigationLink(
+                        destination: Text("olla")
+                    ) {
+                        Image(uiImage: Asset.icAdd.image)
+                    }
+                )
             }
             if viewStore.isActivityIndicatorHidden {
-              ActivityIndicator()
+                ActivityIndicator()
             }
         }
     }

@@ -29,7 +29,8 @@ let template = Template(
         .optional("platform", default: "iOS")
     ],
     files: [
-        .file(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", templatePath: "main.stencil"),
+        .file(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", templatePath: "view.stencil"),
+        .file(path: "\(nameAttribute)/Sources/\(nameAttribute)Store.swift", templatePath: "store.stencil"),
         .string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
         .file(path: "\(nameAttribute)/Project.swift", templatePath: "project.stencil"),
     ]

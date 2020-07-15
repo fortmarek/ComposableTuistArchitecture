@@ -1,0 +1,27 @@
+public struct {{ name }}State {
+    public init(
+        
+    ) {
+        
+    }
+}
+
+public enum {{ name }}Action: Equatable {}
+
+public struct {{ name }}Environment {
+    public init(
+        
+    ) {
+        
+    }
+}
+
+public func {{ name|lowercase }}Reducer(
+    state: inout {{ name }}State,
+    action: {{ name }}Action,
+    environment: {{ name }}Environment
+) -> [Effect<{{ name }}Action>] {
+    switch action {
+        
+    }
+}
