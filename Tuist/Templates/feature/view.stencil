@@ -20,7 +20,9 @@ public struct {{ name }}View: View {
     
     public var body: some View {
         WithViewStore(
-            self.store.scope(state: State.init, action: {{ name }Action.init)
+            self.store
+                .scope(state: \.{{ name|lwoercaase }}, action: {{ name }FeatureAction.init)
+                .scope(state: State.init, action: {{ name }Action.init)
         ) { store in
             Text("{{ name }}")
         }
@@ -45,11 +47,9 @@ struct {{ name }}_Previews: PreviewProvider {
     static var previews: some View {
         {{ name }}View(
             store: Store(
-                initialState: {{ name }}State(
-                    
-                ),
-                reducer: {{ name|lowercase }}Reducer,
-                environment: {{ name }}Environment(
+                initialState: {{ name }}FeatureState(),
+                reducer: {{ name|lowercase }}FeatureReducer,
+                environment: {{ name }}FeatureEnvironment(
                     
                 )
             )

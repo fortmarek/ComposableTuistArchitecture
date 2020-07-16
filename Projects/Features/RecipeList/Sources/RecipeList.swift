@@ -4,6 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
 import AddRecipe
+import RecipeDetail
 
 public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFeatureAction>) -> some View {
     RecipeListView(store: store)
@@ -34,9 +35,13 @@ struct RecipeListView: View {
                 VStack {
                     List {
                         ForEach(viewStore.recipes) { recipe in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(recipe.name)
-                                Text("Duration: " + String(recipe.duration))
+                            NavigationLink(
+                                destination: makeRecipeDetailView(store: self.store.scope(state: \.recipeDetailFeatureState, action: RecipeListFeatureAction.recipeDetail))
+                            ) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(recipe.name)
+                                    Text("Duration: " + String(recipe.duration))
+                                }
                             }
                         }
                         .onDelete {

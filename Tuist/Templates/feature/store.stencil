@@ -1,25 +1,23 @@
 import ComposableArchitecture
+import ComposableTuistArchitectureSupport
 
-public struct {{ name }}State {
-    public init(
-        
-    ) {
-        
-    }
-}
+typealias {{ name }}State = ()
 
 public enum {{ name }}Action: Equatable {}
 
-public struct {{ name }}Environment {
-    public init(
-        
-    ) {
+struct {{ name }}Environment {
+}
+
+let {{ name|lowercase }}Reducer = Reducer<{{ name }}State, {{ name }}Action, {{ name }}Environment> { state, action, environment in
+    switch action {
         
     }
 }
 
-public let {{ name|lowercase }}Reducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnvironment> { state, action, environment in
-    switch action {
-        
+extension {{ name }}FeatureAction {
+    init(_ {{ name|lowercase }}Action: {{ name }}Action) {
+        switch {{ name|lowercase }}Action {
+            
+        }
     }
 }

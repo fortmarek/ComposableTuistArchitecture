@@ -3,6 +3,7 @@ import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
 import AddRecipe
+import RecipeDetail
 
 public struct RecipeListFeatureEnvironment {
     public init(
@@ -18,31 +19,39 @@ public struct RecipeListFeatureEnvironment {
 }
 
 public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeListFeatureAction, RecipeListFeatureEnvironment>.combine(
-  recipeListReducer.pullback(
-    state: \.recipeList,
-    action: /RecipeListFeatureAction.recipeList,
-    environment: {
-        RecipeListEnvironment(
-            cookbookClient: $0.cookbookClient,
-            mainQueue: $0.mainQueue
-        )
-    }
-  ),
-  addRecipeFeatureReducer.pullback(
-    state: \.addRecipeFeatureState,
-    action: /RecipeListFeatureAction.addRecipe,
-    environment: {
-        AddRecipeFeatureEnvironment(
-            cookbookClient: $0.cookbookClient,
-            mainQueue: $0.mainQueue
-        )
-    }
-  )
+    recipeListReducer.pullback(
+        state: \.recipeList,
+        action: /RecipeListFeatureAction.recipeList,
+        environment: {
+            RecipeListEnvironment(
+                cookbookClient: $0.cookbookClient,
+                mainQueue: $0.mainQueue
+            )
+        }
+    ),
+    addRecipeFeatureReducer.pullback(
+        state: \.addRecipeFeatureState,
+        action: /RecipeListFeatureAction.addRecipe,
+        environment: {
+            AddRecipeFeatureEnvironment(
+                cookbookClient: $0.cookbookClient,
+                mainQueue: $0.mainQueue
+            )
+        }
+    ),
+    recipeDetailFeatureReducer.pullback(
+        state: \.recipeDetailFeatureState,
+        action: /RecipeListFeatureAction.recipeDetail,
+        environment: { _ in 
+            RecipeDetailFeatureEnvironment()
+        }
+    )
 )
 
 public enum RecipeListFeatureAction {
     case recipeList(RecipeListAction)
     case addRecipe(AddRecipeFeatureAction)
+    case recipeDetail(RecipeDetailFeatureAction)
 }
 
 public struct RecipeListFeatureState {
@@ -51,13 +60,15 @@ public struct RecipeListFeatureState {
         hasLoadedRecipes: Bool = false,
         isLoadingRecipes: Bool = false,
         isShowingAddRecipe: Bool = false,
-        addRecipeScreenState: AddRecipeScreenState = ("", "", [])
+        addRecipeScreenState: AddRecipeScreenState = ("", "", []),
+        recipeDetailFeatureState: RecipeDetailFeatureState = RecipeDetailFeatureState()
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes
         self.isLoadingRecipes = isLoadingRecipes
         self.isShowingAddRecipe = isShowingAddRecipe
         self.addRecipeScreenState = addRecipeScreenState
+        self.recipeDetailFeatureState = recipeDetailFeatureState
     }
     
     var recipes: [Recipe]
@@ -80,4 +91,6 @@ public struct RecipeListFeatureState {
             addRecipeScreenState = newValue.addRecipeScreenState
         }
     }
+    
+    var recipeDetailFeatureState: RecipeDetailFeatureState
 }

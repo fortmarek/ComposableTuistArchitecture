@@ -1,0 +1,43 @@
+import ComposableArchitecture
+import ComposableTuistArchitectureSupport
+
+public struct {{ name }}FeatureEnvironment {
+    public init(
+        
+    ) {
+        
+    }
+}
+
+public let {{ name|lowercase }}FeatureReducer = Reducer<{{ name }}FeatureState, {{ name }}FeatureAction, {{ name }}FeatureEnvironment>.combine(
+    {{ name|lowercase }}Reducer.pullback(
+        state: \.{{ name|lowercase }},
+        action: /{{ name }}FeatureAction.{{ name|lowercase }},
+        environment: { _ in
+            {{ name }}Environment(
+                
+            )
+        }
+    )
+)
+
+public enum {{ name }}FeatureAction {
+    case {{ name|lowercase }}({{ name }}Action)
+}
+
+public typealias {{ name }}ScreenState = (
+    
+)
+
+public struct {{ name }}FeatureState {
+    public init(
+        
+    ) {
+        
+    }
+    
+    var {{ name|lowercase }}: {{ name }}State {
+        get { () }
+        set { () = newValue }
+    }
+}

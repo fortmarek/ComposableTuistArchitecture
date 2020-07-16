@@ -12,6 +12,7 @@ let project = Project.app(
     features: [
         "RecipeList",
         "AddRecipe",
+        "RecipeDetail",
     ],
     dependencies: [
         .project(
