@@ -31,7 +31,7 @@ let template = Template(
     files: [
         .file(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", templatePath: "view.stencil"),
         .file(path: "\(nameAttribute)/Sources/\(nameAttribute)Store.swift", templatePath: "store.stencil"),
-                .file(path: "\(nameAttribute)/Sources/\(nameAttribute)FeatureStore.swift", templatePath: "featureStore.stencil"),
+//        .file(path: "\(nameAttribute)/Sources/\(nameAttribute)FeatureStore.swift", templatePath: "featureStore.stencil"),
         .string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
         .file(path: "\(nameAttribute)/Project.swift", templatePath: "project.stencil"),
     ]

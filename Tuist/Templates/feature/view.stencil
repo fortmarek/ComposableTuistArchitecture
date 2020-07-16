@@ -3,10 +3,6 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 
-public func make{{ name }}View(store: Store<{{ name }}State, {{ name }}Action>) -> some View {
-    {{ name }}View(store: store)
-}
-
 public struct {{ name }}View: View {
     struct State: Equatable {
         
@@ -18,12 +14,16 @@ public struct {{ name }}View: View {
     
     let store: Store<{{ name }}State, {{ name }}Action>
     
+    public init(store: Store<{{ name }}State, {{ name }}Action>) {
+        self.store = store
+    }
+    
     public var body: some View {
         WithViewStore(
             self.store
                 .scope(state: \.{{ name|lwoercaase }}, action: {{ name }FeatureAction.init)
                 .scope(state: State.init, action: {{ name }Action.init)
-        ) { store in
+        ) { viewStore in
             Text("{{ name }}")
         }
     }

@@ -5,7 +5,7 @@ typealias AddRecipeState = (
     name: String,
     currentIngredient: String,
     ingredients: [String],
-    recipes: [Recipe],
+    recipes: IdentifiedArrayOf<Recipe>,
     isShowingAddRecipe: Bool
 )
 

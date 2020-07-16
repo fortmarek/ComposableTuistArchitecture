@@ -41,7 +41,7 @@ public typealias AddRecipeScreenState = (
 
 public struct AddRecipeFeatureState {
     public init(
-        recipes: [Recipe] = [],
+        recipes: IdentifiedArrayOf<Recipe> = [],
         isShowingAddRecipe: Bool = true,
         addRecipeScreenState: AddRecipeScreenState = ("", "", [])
     ) {
@@ -50,7 +50,7 @@ public struct AddRecipeFeatureState {
         self.addRecipeScreenState = addRecipeScreenState
     }
     
-    public var recipes: [Recipe]
+    public var recipes: IdentifiedArrayOf<Recipe>
     public var isShowingAddRecipe: Bool
     public var addRecipeScreenState: AddRecipeScreenState
     

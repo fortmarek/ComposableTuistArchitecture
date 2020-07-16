@@ -45,6 +45,7 @@ public struct CookbookClient {
     public let recipes: () -> Effect<[Recipe], Failure>
     public let addRecipe: (Recipe) -> Effect<Recipe, Failure>
     public let deleteRecipe: (Recipe) -> Effect<Void, Failure>
+    public let recipeDetail: (Recipe.ID) -> Effect<Recipe, Failure>
     
     public struct Failure: Error, Equatable {}
 }
@@ -89,6 +90,16 @@ public extension CookbookClient {
                 .map { data, error in }
                 .mapError { error in Failure() }
                 .eraseToEffect()
+        },
+        recipeDetail: { recipeID in
+            let url = URL(string: "https://cookbook.ack.ee/api/v1/recipes/\(recipeID)")!
+            let jsonDecoder = JSONDecoder()
+            
+            return URLSession.shared.dataTaskPublisher(for: url)
+                .map { data, _ in data }
+                .decode(type: Recipe.self, decoder: jsonDecoder)
+                .mapError { error in Failure() }
+                .eraseToEffect()
         }
     )
 }
@@ -107,12 +118,16 @@ public extension CookbookClient {
         },
         deleteRecipe: @escaping (Recipe) -> Effect<Void, Failure> = { _ in
             Effect(value: ())
+        },
+        recipeDetail: @escaping (Recipe.ID) -> Effect<Recipe, Failure> = { _ in
+            Effect(value: Recipe(id: "", name: "", description: "", ingredients: [], duration: 0, score: 0, info: ""))
         }
     ) -> Self {
         Self(
             recipes: recipes,
             addRecipe: addRecipe,
-            deleteRecipe: deleteRecipe
+            deleteRecipe: deleteRecipe,
+            recipeDetail: recipeDetail
         )
     }
 }

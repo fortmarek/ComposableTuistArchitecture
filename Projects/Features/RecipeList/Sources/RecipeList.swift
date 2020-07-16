@@ -12,7 +12,8 @@ public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFe
 
 struct RecipeListView: View {
     struct State: Equatable {
-        var recipes: [Recipe]
+        var recipes: IdentifiedArrayOf<Recipe>
+        var selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
         var isActivityIndicatorHidden: Bool
         var isAddRecipeNavigationActive: Bool
     }
@@ -21,6 +22,7 @@ struct RecipeListView: View {
         case recipes
         case deleteRecipes(IndexSet)
         case isShowingAddRecipeChanged(Bool)
+        case selectedRecipeDetail(Recipe.ID?)
     }
     
     let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
@@ -36,7 +38,15 @@ struct RecipeListView: View {
                     List {
                         ForEach(viewStore.recipes) { recipe in
                             NavigationLink(
-                                destination: makeRecipeDetailView(store: self.store.scope(state: \.recipeDetailFeatureState, action: RecipeListFeatureAction.recipeDetail))
+                                destination: IfLetStore(
+                                    self.store.scope(state: { $0.selectionRecipe?.value }, action: RecipeListFeatureAction.recipeDetail),
+                                    then: RecipeDetailView.init
+                                ),
+                                tag: recipe.id,
+                                selection: viewStore.binding(
+                                    get: { $0.selectionRecipe?.id },
+                                    send: Action.selectedRecipeDetail
+                                )
                             ) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(recipe.name)
@@ -83,6 +93,7 @@ extension RecipeListView.State {
         recipes = recipeListState.recipes
         isActivityIndicatorHidden = recipeListState.isLoadingRecipes
         isAddRecipeNavigationActive = recipeListState.isShowingAddRecipe
+        selectionRecipe = recipeListState.selectionRecipe
     }
 }
 
@@ -95,6 +106,8 @@ extension RecipeListAction {
             self = .isShowingAddRecipeChanged(isShowingAddRecipe)
         case let .deleteRecipes(indexSet):
             self = .deleteRecipes(indexSet)
+        case let .selectedRecipeDetail(recipeID):
+            self = .selectedRecipe(recipeID)
         }
     }
 }
