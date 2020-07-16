@@ -5,7 +5,8 @@ typealias AddRecipeState = (
     name: String,
     currentIngredient: String,
     ingredients: [String],
-    recipes: [Recipe]
+    recipes: [Recipe],
+    isShowingAddRecipe: Bool
 )
 
 public enum AddRecipeAction: Equatable {
@@ -45,6 +46,7 @@ let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnviron
         return .none
     case let .addedRecipe(.success(recipe)):
         state.recipes.append(recipe)
+        state.isShowingAddRecipe = false
         return .none
     }
 }

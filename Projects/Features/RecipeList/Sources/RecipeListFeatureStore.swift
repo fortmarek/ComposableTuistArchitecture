@@ -29,7 +29,7 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
     }
   ),
   addRecipeFeatureReducer.pullback(
-    state: \.addRecipe,
+    state: \.addRecipeFeatureState,
     action: /RecipeListFeatureAction.addRecipe,
     environment: {
         AddRecipeFeatureEnvironment(
@@ -50,22 +50,34 @@ public struct RecipeListFeatureState {
         recipes: [Recipe] = [],
         hasLoadedRecipes: Bool = false,
         isLoadingRecipes: Bool = false,
-        addRecipe: AddRecipeFeatureState = AddRecipeFeatureState()
+        isShowingAddRecipe: Bool = false,
+        addRecipeScreenState: AddRecipeScreenState = ("", "", [])
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes
         self.isLoadingRecipes = isLoadingRecipes
-        self.addRecipe = addRecipe
+        self.isShowingAddRecipe = isShowingAddRecipe
+        self.addRecipeScreenState = addRecipeScreenState
     }
     
     var recipes: [Recipe]
     var hasLoadedRecipes: Bool
     var isLoadingRecipes: Bool
+    var isShowingAddRecipe: Bool
     
     var recipeList: RecipeListState {
-        get { (recipes, hasLoadedRecipes, isLoadingRecipes) }
-        set { (recipes, hasLoadedRecipes, isLoadingRecipes) = newValue }
+        get { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe) }
+        set { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe) = newValue }
     }
     
-    var addRecipe: AddRecipeFeatureState
+    var addRecipeScreenState: AddRecipeScreenState
+    
+    var addRecipeFeatureState: AddRecipeFeatureState {
+        get { AddRecipeFeatureState(recipes: recipes, isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
+        set {
+            recipes = newValue.recipes
+            isShowingAddRecipe = newValue.isShowingAddRecipe
+            addRecipeScreenState = newValue.addRecipeScreenState
+        }
+    }
 }

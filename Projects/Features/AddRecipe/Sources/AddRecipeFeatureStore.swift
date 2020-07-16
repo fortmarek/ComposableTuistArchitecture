@@ -33,26 +33,29 @@ public enum AddRecipeFeatureAction {
     case addRecipe(AddRecipeAction)
 }
 
+public typealias AddRecipeScreenState = (
+    name: String,
+    currentIngredient: String,
+    ingredients: [String]
+)
+
 public struct AddRecipeFeatureState {
     public init(
         recipes: [Recipe] = [],
-        name: String = "",
-        currentIngredient: String = "",
-        ingredients: [String] = []
+        isShowingAddRecipe: Bool = true,
+        addRecipeScreenState: AddRecipeScreenState = ("", "", [])
     ) {
         self.recipes = recipes
-        self.name = name
-        self.currentIngredient = currentIngredient
-        self.ingredients = ingredients
+        self.isShowingAddRecipe = isShowingAddRecipe
+        self.addRecipeScreenState = addRecipeScreenState
     }
     
-    var recipes: [Recipe]
-    var name: String
-    var currentIngredient: String
-    var ingredients: [String]
+    public var recipes: [Recipe]
+    public var isShowingAddRecipe: Bool
+    public var addRecipeScreenState: AddRecipeScreenState
     
     var addRecipe: AddRecipeState {
-        get { (name, currentIngredient, ingredients, recipes) }
-        set { (name, currentIngredient, ingredients, recipes) = newValue }
+        get { (addRecipeScreenState.name, addRecipeScreenState.currentIngredient, addRecipeScreenState.ingredients, recipes, isShowingAddRecipe) }
+        set { (addRecipeScreenState.name, addRecipeScreenState.currentIngredient, addRecipeScreenState.ingredients, recipes, isShowingAddRecipe) = newValue }
     }
 }

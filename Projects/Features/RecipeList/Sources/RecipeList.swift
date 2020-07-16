@@ -13,12 +13,14 @@ struct RecipeListView: View {
     struct State: Equatable {
         var recipes: [Recipe]
         var isActivityIndicatorHidden: Bool
+        var isAddRecipeNavigationActive: Bool
     }
     
     enum Action {
         case recipes
+        case isShowingAddRecipeChanged(Bool)
     }
-
+    
     let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
     
     var body: some View {
@@ -28,19 +30,33 @@ struct RecipeListView: View {
                 .scope(state: State.init, action: RecipeListAction.init)
         ) { viewStore in
             NavigationView {
-                List {
-                    ForEach(viewStore.recipes) { recipe in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(recipe.name)
-                            Text("Duration: " + String(recipe.duration))
+                VStack {
+                    List {
+                        ForEach(viewStore.recipes) { recipe in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(recipe.name)
+                                Text("Duration: " + String(recipe.duration))
+                            }
                         }
+                    }
+                    // NavigationLink does not work as a trailing navigationButton
+                    NavigationLink(
+                        destination: makeAddRecipeView(store: self.store.scope(state: \.addRecipeFeatureState, action: RecipeListFeatureAction.addRecipe)),
+                        isActive: viewStore.binding(get: \.isAddRecipeNavigationActive, send: Action.isShowingAddRecipeChanged)
+                    ) {
+                        EmptyView()
                     }
                 }
                 .onAppear { viewStore.send(.recipes) }
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
-                    trailing: NavigationLink(
-                        destination: makeAddRecipeView(store: self.store.scope(state: { $0.addRecipe }, action: RecipeListFeatureAction.addRecipe))
+                    // NavigationLink does not work as a trailing navigationButton
+                    trailing: Button(
+                        action: {
+                            viewStore.send(
+                                .isShowingAddRecipeChanged(!viewStore.isAddRecipeNavigationActive)
+                            )
+                        }
                     ) {
                         Image(uiImage: Asset.icAdd.image)
                     }
@@ -57,6 +73,7 @@ extension RecipeListView.State {
     init(recipeListState: RecipeListState) {
         recipes = recipeListState.recipes
         isActivityIndicatorHidden = recipeListState.isLoadingRecipes
+        isAddRecipeNavigationActive = recipeListState.isShowingAddRecipe
     }
 }
 
@@ -65,6 +82,8 @@ extension RecipeListAction {
         switch action {
         case .recipes:
             self = .recipes
+        case let .isShowingAddRecipeChanged(isShowingAddRecipe):
+            self = .isShowingAddRecipeChanged(isShowingAddRecipe)
         }
     }
 }
@@ -77,8 +96,7 @@ struct RecipeList_Previews: PreviewProvider {
                     recipes: [
                         Recipe(id: "a", name: "Spaghetti", description: "", ingredients: [], duration: 20, score: 2, info: "")
                     ],
-                    isLoadingRecipes: false,
-                    addRecipe: AddRecipeFeatureState()
+                    isLoadingRecipes: false
                 ),
                 reducer: recipeListFeatureReducer,
                 environment: RecipeListFeatureEnvironment(
@@ -89,7 +107,7 @@ struct RecipeList_Previews: PreviewProvider {
                                     Recipe(id: "a", name: "Spaghetti", description: "", ingredients: ["Banana"], duration: 20, score: 2, info: "")
                                 ]
                             )
-                    }
+                        }
                     ),
                     mainQueue: DispatchQueue.main.eraseToAnyScheduler()
                 )
