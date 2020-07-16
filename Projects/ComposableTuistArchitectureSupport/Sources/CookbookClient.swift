@@ -41,6 +41,28 @@ public struct Recipe: Codable, Identifiable, Equatable {
     }
 }
 
+public extension Recipe {
+    static func mock(
+        id: String = "",
+        name: String = "",
+        description: String = "",
+        ingredients: [String] = [],
+        duration: Int = 0,
+        score: Double = 0,
+        info: String = ""
+    ) -> Recipe {
+        .init(
+            id: id,
+            name: name,
+            description: description,
+            ingredients: ingredients,
+            duration: duration,
+            score: score,
+            info: info
+        )
+    }
+}
+
 public struct CookbookClient {
     public let recipes: () -> Effect<[Recipe], Failure>
     public let addRecipe: (Recipe) -> Effect<Recipe, Failure>
