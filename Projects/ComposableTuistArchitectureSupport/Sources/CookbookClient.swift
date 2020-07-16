@@ -44,6 +44,7 @@ public struct Recipe: Codable, Identifiable, Equatable {
 public struct CookbookClient {
     public let recipes: () -> Effect<[Recipe], Failure>
     public let addRecipe: (Recipe) -> Effect<Recipe, Failure>
+    public let deleteRecipe: (Recipe) -> Effect<Void, Failure>
     
     public struct Failure: Error, Equatable {}
 }
@@ -77,6 +78,17 @@ public extension CookbookClient {
                 .decode(type: Recipe.self, decoder: jsonDecoder)
                 .mapError { error in Failure() }
                 .eraseToEffect()
+        },
+        deleteRecipe: { recipe in
+            let url = URL(string: "https://cookbook.ack.ee/api/v1/recipes/\(recipe.id)")!
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "DELETE"
+            
+            return URLSession.shared.dataTaskPublisher(for: request)
+                .map { data, error in }
+                .mapError { error in Failure() }
+                .eraseToEffect()
         }
     )
 }
@@ -92,11 +104,15 @@ public extension CookbookClient {
             Effect(
                 value: $0
             )
+        },
+        deleteRecipe: @escaping (Recipe) -> Effect<Void, Failure> = { _ in
+            Effect(value: ())
         }
     ) -> Self {
         Self(
             recipes: recipes,
-            addRecipe: addRecipe
+            addRecipe: addRecipe,
+            deleteRecipe: deleteRecipe
         )
     }
 }

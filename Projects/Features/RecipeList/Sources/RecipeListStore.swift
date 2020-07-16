@@ -13,6 +13,7 @@ typealias RecipeListState = (
 
 public enum RecipeListAction: Equatable {
     case recipes
+    case deleteRecipes(IndexSet)
     case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
     case isShowingAddRecipeChanged(Bool)
 }
@@ -48,5 +49,18 @@ let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnv
     case let .isShowingAddRecipeChanged(isShowingAddRecipe):
         state.isShowingAddRecipe = isShowingAddRecipe
         return .none
+    case let .deleteRecipes(indexSet):
+        let recipes = indexSet.map { state.recipes[$0] }
+        state.recipes.remove(atOffsets: indexSet)
+        return Effect.merge(
+            recipes.map {
+                environment.cookbookClient
+                    .deleteRecipe($0)
+                    .catch { _ in Empty<Void, Never>() }
+                    .ignoreOutput()
+                    .eraseToEffect()
+            }
+        )
+        .fireAndForget()
     }
 }

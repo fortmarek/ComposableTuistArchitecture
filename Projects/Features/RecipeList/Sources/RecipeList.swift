@@ -18,6 +18,7 @@ struct RecipeListView: View {
     
     enum Action {
         case recipes
+        case deleteRecipes(IndexSet)
         case isShowingAddRecipeChanged(Bool)
     }
     
@@ -37,6 +38,9 @@ struct RecipeListView: View {
                                 Text(recipe.name)
                                 Text("Duration: " + String(recipe.duration))
                             }
+                        }
+                        .onDelete {
+                            viewStore.send(.deleteRecipes($0))
                         }
                     }
                     // NavigationLink does not work as a trailing navigationButton
@@ -84,6 +88,8 @@ extension RecipeListAction {
             self = .recipes
         case let .isShowingAddRecipeChanged(isShowingAddRecipe):
             self = .isShowingAddRecipeChanged(isShowingAddRecipe)
+        case let .deleteRecipes(indexSet):
+            self = .deleteRecipes(indexSet)
         }
     }
 }
