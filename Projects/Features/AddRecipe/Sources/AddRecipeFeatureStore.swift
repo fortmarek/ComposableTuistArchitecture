@@ -55,7 +55,21 @@ public struct AddRecipeFeatureState {
     public var addRecipeScreenState: AddRecipeScreenState
     
     var addRecipe: AddRecipeState {
-        get { (addRecipeScreenState.name, addRecipeScreenState.currentIngredient, addRecipeScreenState.ingredients, recipes, isShowingAddRecipe) }
-        set { (addRecipeScreenState.name, addRecipeScreenState.currentIngredient, addRecipeScreenState.ingredients, recipes, isShowingAddRecipe) = newValue }
+        get {
+            AddRecipeState(
+                name: addRecipeScreenState.name,
+                currentIngredient: addRecipeScreenState.currentIngredient,
+                ingredients: addRecipeScreenState.ingredients,
+                recipes: recipes,
+                isShowingAddRecipe: isShowingAddRecipe
+            )     
+        }
+        set {
+            addRecipeScreenState.name = newValue.name
+            addRecipeScreenState.currentIngredient = newValue.currentIngredient
+            addRecipeScreenState.ingredients = newValue.ingredients
+            recipes = newValue.recipes
+            isShowingAddRecipe = newValue.isShowingAddRecipe
+        }
     }
 }

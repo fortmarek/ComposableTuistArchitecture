@@ -4,21 +4,14 @@ let nameAttribute: Template.Attribute = .required("name")
 let testContents = """
 import Foundation
 import XCTest
+import ComposableArchitecture
+import ComposableTuistArchitectureSupport
+@testable import \(nameAttribute)
 
 final class \(nameAttribute)Tests: XCTestCase {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
-    func test_example() {
+    func testExample() {
         // Add your test here
     }
-
 }
 """
 

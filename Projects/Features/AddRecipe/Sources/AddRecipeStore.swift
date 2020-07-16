@@ -1,13 +1,13 @@
 import ComposableArchitecture
 import ComposableTuistArchitectureSupport
 
-typealias AddRecipeState = (
-    name: String,
-    currentIngredient: String,
-    ingredients: [String],
-    recipes: IdentifiedArrayOf<Recipe>,
-    isShowingAddRecipe: Bool
-)
+struct AddRecipeState: Equatable {
+    var name: String = ""
+    var currentIngredient: String = ""
+    var ingredients: [String] = []
+    var recipes: IdentifiedArrayOf<Recipe> = []
+    var isShowingAddRecipe: Bool = false
+}
 
 public enum AddRecipeAction: Equatable {
     case nameChanged(String)
@@ -35,7 +35,7 @@ let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnviron
         state.currentIngredient = ""
         return .none
     case .addRecipe:
-        let recipe = Recipe(id: "", name: state.name, description: "Desc", ingredients: state.ingredients, duration: 10, score: 0, info: "Ola")
+        let recipe = Recipe(id: "", name: state.name, description: "Desc", ingredients: state.ingredients, duration: 10, score: 0, info: "Info")
         return environment.cookbookClient
             .addRecipe(recipe)
             .receive(on: environment.mainQueue)

@@ -7,7 +7,6 @@ import ComposableTuistArchitectureSupport
 final class RecipeDetailTests: XCTestCase {
     let scheduler = DispatchQueue.testScheduler
     
-    
     func testHappyFlow() {
         let recipe: Recipe = .mock()
         let store = setupStore(recipe: recipe)
