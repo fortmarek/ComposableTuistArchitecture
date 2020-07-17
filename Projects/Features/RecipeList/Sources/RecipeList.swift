@@ -42,6 +42,7 @@ struct RecipeListView: View {
                                 destination: IfLetStore(
                                     self.store.scope(state: { $0.selectionRecipe?.value }, action: RecipeListFeatureAction.recipeDetail),
                                     then: RecipeDetailView.init
+//                                    then: UIKit_RecipeDetailView.init
                                 ),
                                 tag: recipe.id,
                                 selection: viewStore.binding(
