@@ -21,7 +21,8 @@ public struct {{ name }}View: View {
     public var body: some View {
         WithViewStore(
             self.store
-                .scope(state: State.init, action: {{ name }}Action.init)
+                .scope(state: \.{{ name|lowercase }}, action: {{ name }FeatureAction.init)
+                .scope(state: State.init, action: {{ name }Action.init)
         ) { viewStore in
             Text("{{ name }}")
         }
@@ -46,9 +47,9 @@ struct {{ name }}_Previews: PreviewProvider {
     static var previews: some View {
         {{ name }}View(
             store: Store(
-                initialState: {{ name }}State(),
-                reducer: {{ name|lowercase }}Reducer,
-                environment: {{ name }}Environment(
+                initialState: {{ name }}FeatureState(),
+                reducer: {{ name|lowercase }}FeatureReducer,
+                environment: {{ name }}FeatureEnvironment(
                     
                 )
             )

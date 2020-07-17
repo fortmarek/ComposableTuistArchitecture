@@ -13,16 +13,12 @@ public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFe
 struct RecipeListView: View {
     struct State: Equatable {
         var recipes: IdentifiedArrayOf<Recipe>
-        var selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
         var isActivityIndicatorHidden: Bool
-        var isAddRecipeNavigationActive: Bool
     }
     
     enum Action {
         case recipes
         case deleteRecipes(IndexSet)
-        case isShowingAddRecipeChanged(Bool)
-        case selectedRecipeDetail(Recipe.ID?)
     }
     
     let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
@@ -37,55 +33,20 @@ struct RecipeListView: View {
                 VStack {
                     List {
                         ForEach(viewStore.recipes) { recipe in
-                            NavigationLink(
-                                destination: IfLetStore(
-                                    self.store.scope(state: { $0.selectionRecipe?.value }, action: RecipeListFeatureAction.recipeDetail),
-                                    then: RecipeDetailView.init
-                                    // UIViewController
-//                                    then: UIKit_RecipeDetail.init
-                                ),
-                                tag: recipe.id,
-                                selection: viewStore.binding(
-                                    get: { $0.selectionRecipe?.id },
-                                    send: Action.selectedRecipeDetail
-                                )
-                            ) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(recipe.name)
-                                    Text("Duration: " + String(recipe.duration))
-                                }
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(recipe.name)
+                                Text("Duration: " + String(recipe.duration))
                             }
                         }
                         .onDelete {
                             viewStore.send(.deleteRecipes($0))
                         }
                     }
-                    // NavigationLink does not work as a trailing navigationButton
-                    NavigationLink(
-                        destination: AddRecipeView(
-                            store: self.store.scope(
-                                state: \.addRecipeState,
-                                action: RecipeListFeatureAction.addRecipe
-                            )
-                        ),
-                        isActive: viewStore.binding(get: \.isAddRecipeNavigationActive, send: Action.isShowingAddRecipeChanged)
-                    ) {
-                        EmptyView()
-                    }
                 }
                 .onAppear { viewStore.send(.recipes) }
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
-                    // NavigationLink does not work as a trailing navigationButton
-                    trailing: Button(
-                        action: {
-                            viewStore.send(
-                                .isShowingAddRecipeChanged(!viewStore.isAddRecipeNavigationActive)
-                            )
-                        }
-                    ) {
-                        Image(uiImage: Asset.icAdd.image)
-                    }
+                    trailing: Image(uiImage: Asset.icAdd.image)
                 )
             }
             if viewStore.isActivityIndicatorHidden {
@@ -99,8 +60,6 @@ extension RecipeListView.State {
     init(recipeListState: RecipeListState) {
         recipes = recipeListState.recipes
         isActivityIndicatorHidden = recipeListState.isLoadingRecipes
-        isAddRecipeNavigationActive = recipeListState.isShowingAddRecipe
-        selectionRecipe = recipeListState.selectionRecipe
     }
 }
 
@@ -109,12 +68,8 @@ extension RecipeListAction {
         switch action {
         case .recipes:
             self = .recipes
-        case let .isShowingAddRecipeChanged(isShowingAddRecipe):
-            self = .isShowingAddRecipeChanged(isShowingAddRecipe)
         case let .deleteRecipes(indexSet):
             self = .deleteRecipes(indexSet)
-        case let .selectedRecipeDetail(recipeID):
-            self = .selectedRecipe(recipeID)
         }
     }
 }

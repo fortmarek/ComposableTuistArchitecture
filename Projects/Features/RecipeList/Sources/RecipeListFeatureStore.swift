@@ -28,56 +28,11 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
                 mainQueue: $0.mainQueue
             )
         }
-    ),
-    addRecipeReducer.pullback(
-        state: \.addRecipeState,
-        action: /RecipeListFeatureAction.addRecipe,
-        environment: {
-            AddRecipeEnvironment(
-                cookbookClient: $0.cookbookClient,
-                mainQueue: $0.mainQueue
-            )
-        }
-    ),
-    recipeDetailReducer
-        .pullback(
-            state: \.value,
-            action: .self,
-            environment: { $0 }
-        )
-        .optional
-        .pullback(
-            state: \.selectionRecipe,
-            action: /RecipeListFeatureAction.recipeDetail,
-            environment: {
-                RecipeDetailEnvironment(
-                    cookbookClient: $0.cookbookClient,
-                    mainQueue: $0.mainQueue
-                )
-            }
-        ),
-    Reducer { state, action, _ in
-        switch action {
-        case .recipeList:
-            return .none
-        case let .addRecipe(addRecipeAction):
-            switch addRecipeAction {
-            case .nameChanged, .currentIngredientChanged, .addIngredient, .addRecipe, .addedRecipe(.failure):
-                return .none
-            case let .addedRecipe(.success(recipe)):
-                state.recipes.append(recipe)
-                return .none
-            }
-        case .recipeDetail:
-            return .none
-        }
-    }
+    )
 )
 
 public enum RecipeListFeatureAction {
     case recipeList(RecipeListAction)
-    case addRecipe(AddRecipeAction)
-    case recipeDetail(RecipeDetailAction)
 }
 
 public struct RecipeListFeatureState {
@@ -85,35 +40,19 @@ public struct RecipeListFeatureState {
         recipes: IdentifiedArrayOf<Recipe> = [],
         hasLoadedRecipes: Bool = false,
         isLoadingRecipes: Bool = false,
-        isShowingAddRecipe: Bool = false,
-        addRecipeScreenState: AddRecipeScreenState = ("", "", []),
         recipeDetailState: RecipeDetailState? = nil
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes
         self.isLoadingRecipes = isLoadingRecipes
-        self.isShowingAddRecipe = isShowingAddRecipe
-        self.addRecipeScreenState = addRecipeScreenState
     }
     
     var recipes: IdentifiedArrayOf<Recipe>
     var hasLoadedRecipes: Bool
     var isLoadingRecipes: Bool
-    var isShowingAddRecipe: Bool
-    var selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
     
     var recipeList: RecipeListState {
-        get { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe, selectionRecipe) }
-        set { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe, selectionRecipe) = newValue }
-    }
-    
-    var addRecipeScreenState: AddRecipeScreenState
-    
-    var addRecipeState: AddRecipeState {
-        get { AddRecipeState(isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
-        set {
-            isShowingAddRecipe = newValue.isShowingAddRecipe
-            addRecipeScreenState = (newValue.name, newValue.currentIngredient, newValue.ingredients)
-        }
+        get { (recipes, hasLoadedRecipes, isLoadingRecipes) }
+        set { (recipes, hasLoadedRecipes, isLoadingRecipes) = newValue }
     }
 }

@@ -8,17 +8,13 @@ import RecipeDetail
 typealias RecipeListState = (
     recipes: IdentifiedArrayOf<Recipe>,
     hasLoadedRecipes: Bool,
-    isLoadingRecipes: Bool,
-    isShowingAddRecipe: Bool,
-    selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
+    isLoadingRecipes: Bool
 )
 
 public enum RecipeListAction: Equatable {
     case recipes
     case deleteRecipes(IndexSet)
     case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
-    case isShowingAddRecipeChanged(Bool)
-    case selectedRecipe(Recipe.ID?)
 }
 
 struct RecipeListEnvironment {
@@ -49,9 +45,6 @@ let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnv
         state.isLoadingRecipes = false
         
         return .none
-    case let .isShowingAddRecipeChanged(isShowingAddRecipe):
-        state.isShowingAddRecipe = isShowingAddRecipe
-        return .none
     case let .deleteRecipes(indexSet):
         let recipes = indexSet.map { state.recipes[$0] }
         state.recipes.remove(atOffsets: indexSet)
@@ -65,19 +58,5 @@ let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnv
             }
         )
         .fireAndForget()
-    case let .selectedRecipe(recipeID):
-        guard
-            let recipeID = recipeID,
-            let recipe = state.recipes[id: recipeID]
-        else {
-            state.selectionRecipe = nil
-            return .none
-        }
-        state.selectionRecipe = Identified(
-            RecipeDetailState(recipe: recipe),
-            id: recipeID
-        )
-        
-        return .none
     }
 }
