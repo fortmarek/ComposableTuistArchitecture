@@ -40,7 +40,9 @@ struct RecipeListView: View {
                             NavigationLink(
                                 destination: IfLetStore(
                                     self.store.scope(state: { $0.selectionRecipe?.value }, action: RecipeListFeatureAction.recipeDetail),
-                                    then: RecipeDetailView.init
+                                    then: RecipeDetail.init
+                                    // UIViewController
+//                                    then: UIKit_RecipeDetail.init
                                 ),
                                 tag: recipe.id,
                                 selection: viewStore.binding(
