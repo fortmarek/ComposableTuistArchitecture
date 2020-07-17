@@ -5,7 +5,6 @@ struct AddRecipeState: Equatable {
     var name: String = ""
     var currentIngredient: String = ""
     var ingredients: [String] = []
-    var recipes: IdentifiedArrayOf<Recipe> = []
     var isShowingAddRecipe: Bool = false
 }
 
@@ -45,7 +44,6 @@ let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnviron
         // TODO: Handle error
         return .none
     case let .addedRecipe(.success(recipe)):
-        state.recipes.append(recipe)
         state.isShowingAddRecipe = false
         return .none
     }

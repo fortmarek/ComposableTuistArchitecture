@@ -41,7 +41,6 @@ final class AddRecipeTests: XCTestCase {
                     )
                 )
             ) {
-                $0.recipes.append(.mock(name: "Recipe", description: "Desc", ingredients: ["Ingredient"], duration: 10, info: "Info"))
                 $0.isShowingAddRecipe = false
             }
         )

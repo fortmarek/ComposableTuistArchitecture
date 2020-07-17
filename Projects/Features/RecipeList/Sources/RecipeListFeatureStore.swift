@@ -55,7 +55,28 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
                     mainQueue: $0.mainQueue
                 )
             }
-        )
+        ),
+    Reducer { state, action, _ in
+        switch action {
+        case .recipeList:
+            return .none
+        case let .addRecipe(addRecipeFeatureAction):
+            switch addRecipeFeatureAction {
+            case let .addRecipe(addRecipeAction):
+                switch addRecipeAction {
+                case .nameChanged, .currentIngredientChanged, .addIngredient, .addRecipe:
+                    return .none
+                case let .addedRecipe(.success(recipe)):
+                    state.recipes.append(recipe)
+                    return .none
+                case .addedRecipe(.failure):
+                    return .none
+                }
+            }
+        case .recipeDetail:
+            return .none
+        }
+    }
 )
 
 public enum RecipeListFeatureAction {
@@ -94,9 +115,8 @@ public struct RecipeListFeatureState {
     var addRecipeScreenState: AddRecipeScreenState
     
     var addRecipeFeatureState: AddRecipeFeatureState {
-        get { AddRecipeFeatureState(recipes: recipes, isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
+        get { AddRecipeFeatureState(isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
         set {
-            recipes = newValue.recipes
             isShowingAddRecipe = newValue.isShowingAddRecipe
             addRecipeScreenState = newValue.addRecipeScreenState
         }
