@@ -3,12 +3,14 @@ import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
 import AddRecipe
+import RecipeDetail
 
 typealias RecipeListState = (
     recipes: IdentifiedArrayOf<Recipe>,
     hasLoadedRecipes: Bool,
     isLoadingRecipes: Bool,
-    isShowingAddRecipe: Bool
+    isShowingAddRecipe: Bool,
+    selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
 )
 
 public enum RecipeListAction: Equatable {
@@ -16,6 +18,7 @@ public enum RecipeListAction: Equatable {
     case deleteRecipes(IndexSet)
     case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
     case isShowingAddRecipeChanged(Bool)
+    case selectedRecipeDetail(Recipe.ID?)
 }
 
 struct RecipeListEnvironment {
@@ -61,6 +64,21 @@ let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnv
         .fireAndForget()
     case let .isShowingAddRecipeChanged(isShowingAddRecipe):
         state.isShowingAddRecipe = isShowingAddRecipe
+        return .none
+    case let .selectedRecipeDetail(recipeID):
+        guard
+            let recipeID = recipeID,
+            let recipe = state.recipes[id: recipeID]
+        else {
+            state.selectionRecipe = nil
+            return .none
+        }
+        
+        state.selectionRecipe = Identified(
+            RecipeDetailState(recipe: recipe),
+            id: recipeID
+        )
+
         return .none
     }
 }

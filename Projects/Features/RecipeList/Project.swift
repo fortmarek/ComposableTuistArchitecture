@@ -8,5 +8,9 @@ let project = Project.feature(
             target: "AddRecipe",
             path: .relativeToRoot("Projects/Features/AddRecipe")
         ),
+        .project(
+            target: "RecipeDetail",
+            path: .relativeToRoot("Projects/Features/RecipeDetail")
+        ),
     ]
 )

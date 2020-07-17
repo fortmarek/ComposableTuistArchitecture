@@ -4,6 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
 import AddRecipe
+import RecipeDetail
 
 public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFeatureAction>) -> some View {
     RecipeListView(store: store)
@@ -14,6 +15,7 @@ struct RecipeListView: View {
         var recipes: IdentifiedArrayOf<Recipe>
         var isActivityIndicatorHidden: Bool
         var isAddRecipeNavigationLinkActive: Bool
+        var selectionRecipe: Identified<Recipe.ID, RecipeDetailState>?
     }
     
     enum Action {
@@ -21,6 +23,7 @@ struct RecipeListView: View {
         case deleteRecipes(IndexSet)
         case tappedOnAddRecipe
         case isAddRecipeNavigationLinkActiveChanged(Bool)
+        case selectedRecipeDetail(Recipe.ID?)
     }
     
     let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
@@ -35,9 +38,21 @@ struct RecipeListView: View {
                 VStack {
                     List {
                         ForEach(viewStore.recipes) { recipe in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(recipe.name)
-                                Text("Duration: " + String(recipe.duration))
+                            NavigationLink(
+                                destination: IfLetStore(
+                                    self.store.scope(state: { $0.selectionRecipe?.value }, action: RecipeListFeatureAction.recipeDetail),
+                                    then: RecipeDetailView.init
+                                ),
+                                tag: recipe.id,
+                                selection: viewStore.binding(
+                                    get: { $0.selectionRecipe?.id },
+                                    send: Action.selectedRecipeDetail
+                                )
+                            ) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(recipe.name)
+                                    Text("Duration: " + String(recipe.duration))
+                                }
                             }
                         }
                         .onDelete {
@@ -71,6 +86,7 @@ extension RecipeListView.State {
         recipes = recipeListState.recipes
         isActivityIndicatorHidden = recipeListState.isLoadingRecipes
         isAddRecipeNavigationLinkActive = recipeListState.isShowingAddRecipe
+        selectionRecipe = recipeListState.selectionRecipe
     }
 }
 
@@ -85,6 +101,8 @@ extension RecipeListAction {
             self = .isShowingAddRecipeChanged(true)
         case let .isAddRecipeNavigationLinkActiveChanged(value):
             self = .isShowingAddRecipeChanged(value)
+        case let .selectedRecipeDetail(recipeID):
+            self = .selectedRecipeDetail(recipeID)
         }
     }
 }
