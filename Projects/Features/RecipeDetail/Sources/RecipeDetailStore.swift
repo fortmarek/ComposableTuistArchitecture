@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import ComposableTuistArchitectureSupport
+import Combine
 
 public struct RecipeDetailState: Equatable {
     public init(
@@ -55,6 +56,13 @@ public let recipeDetailReducer = Reducer<RecipeDetailState, RecipeDetailAction, 
         return .none
     case let .changedRating(rating):
         state.currentRating = rating
-        return .none
+        
+        return environment.cookbookClient
+            .rateRecipe(state.recipe.id, rating)
+            .map { _ in }
+            .catch { _ in Empty<Void, Never>() }
+            .ignoreOutput()
+            .eraseToEffect()
+            .fireAndForget()
     }
 }

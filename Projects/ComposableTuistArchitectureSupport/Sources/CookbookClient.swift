@@ -63,11 +63,42 @@ public extension Recipe {
     }
 }
 
+public struct Rating: Identifiable, Equatable, Codable {
+    public let score: Int
+    public let recipe: Recipe.ID
+    public let id: String
+    
+    public init(
+        score: Int,
+        recipe: Recipe.ID,
+        id: Rating.ID
+    ) {
+        self.score = score
+        self.recipe = recipe
+        self.id = id
+    }
+}
+
+public extension Rating {
+    static func mock(
+        score: Int = 2,
+        recipe: Recipe.ID = "",
+        id: Rating.ID = ""
+    ) -> Rating {
+        .init(
+            score: score,
+            recipe: recipe,
+            id: id
+        )
+    }
+}
+
 public struct CookbookClient {
     public let recipes: () -> Effect<[Recipe], Failure>
     public let addRecipe: (Recipe) -> Effect<Recipe, Failure>
     public let deleteRecipe: (Recipe) -> Effect<Void, Failure>
     public let recipeDetail: (Recipe.ID) -> Effect<Recipe, Failure>
+    public let rateRecipe: (Recipe.ID, Int) -> Effect<Rating, Failure>
     
     public struct Failure: Error, Equatable {}
 }
@@ -122,6 +153,28 @@ public extension CookbookClient {
                 .decode(type: Recipe.self, decoder: jsonDecoder)
                 .mapError { error in Failure() }
                 .eraseToEffect()
+        },
+        rateRecipe: { recipeID, rating in
+            let url = URL(string: "https://cookbook.ack.ee/api/v1/recipes/\(recipeID)/rating")!
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            
+            struct PostRating: Codable {
+                let rating: Int
+            }
+            
+            let jsonEncoder = JSONEncoder()
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try! jsonEncoder.encode(PostRating(rating: rating))
+            
+            let jsonDecoder = JSONDecoder()
+            
+            return URLSession.shared.dataTaskPublisher(for: request)
+                .map { data, error in data }
+                .decode(type: Rating.self, decoder: jsonDecoder)
+                .mapError { error in Failure() }
+                .eraseToEffect()
         }
     )
 }
@@ -143,13 +196,17 @@ public extension CookbookClient {
         },
         recipeDetail: @escaping (Recipe.ID) -> Effect<Recipe, Failure> = { _ in
             Effect(value: Recipe(id: "", name: "", description: "", ingredients: [], duration: 0, score: 0, info: ""))
+        },
+        rateRecipe: @escaping (Recipe.ID, Int) -> Effect<Rating, Failure> = { recipeID, rating in
+            Effect(value: Rating.mock(score: rating, recipe: recipeID))
         }
     ) -> Self {
         Self(
             recipes: recipes,
             addRecipe: addRecipe,
             deleteRecipe: deleteRecipe,
-            recipeDetail: recipeDetail
+            recipeDetail: recipeDetail,
+            rateRecipe: rateRecipe
         )
     }
 }
