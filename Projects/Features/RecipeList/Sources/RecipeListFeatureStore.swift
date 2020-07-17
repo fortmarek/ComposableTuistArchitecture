@@ -27,7 +27,31 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
                 mainQueue: $0.mainQueue
             )
         }
-    )
+    ),
+    addRecipeReducer.pullback(
+        state: \.addRecipeState,
+        action: /RecipeListFeatureAction.addRecipe,
+        environment: {
+            AddRecipeEnvironment(
+                cookbookClient: $0.cookbookClient,
+                mainQueue: $0.mainQueue
+            )
+        }
+    ),
+    Reducer { state, action, _ in
+        switch action {
+        case .recipeList:
+            return .none
+        case let .addRecipe(addRecipeAction):
+            switch addRecipeAction {
+            case .currentIngredientChanged, .nameChanged, .addedIngredient, .addRecipe, .addedRecipe(.failure):
+                return .none
+            case let .addedRecipe(.success(recipe)):
+                state.recipes.append(recipe)
+                return .none
+            }
+        }
+    }
 )
 
 public enum RecipeListFeatureAction {

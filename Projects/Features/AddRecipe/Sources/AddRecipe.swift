@@ -13,6 +13,7 @@ public struct AddRecipeView: View {
     enum Action {
         case nameChanged(String)
         case tappedOnAddIngredient
+        case tappedOnAddRecipe
         case currentIngredientChanged(String)
     }
     
@@ -43,6 +44,13 @@ public struct AddRecipeView: View {
                 )
             }
             .padding()
+            .navigationTitle("Add recipe")
+            .navigationBarItems(
+                trailing: Button(
+                    "Add",
+                    action: { viewStore.send(.tappedOnAddRecipe) }
+                )
+            )
         }
     }
 }
@@ -64,22 +72,27 @@ extension AddRecipeAction {
             self = .currentIngredientChanged(currentIngredient)
         case .tappedOnAddIngredient:
             self = .addedIngredient
+        case .tappedOnAddRecipe:
+            self = .addRecipe
         }
     }
 }
 
 struct AddRecipe_Previews: PreviewProvider {
     static var previews: some View {
-        AddRecipeView(
-            store: Store(
-                initialState: AddRecipeState(
-                    ingredients: ["Soup"]
-                ),
-                reducer: addRecipeReducer,
-                environment: AddRecipeEnvironment(
-                    
+        NavigationView {
+            AddRecipeView(
+                store: Store(
+                    initialState: AddRecipeState(
+                        ingredients: ["Soup"]
+                    ),
+                    reducer: addRecipeReducer,
+                    environment: AddRecipeEnvironment(
+                        cookbookClient: .mock(),
+                        mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+                    )
                 )
             )
-        )
+        }
     }
 }

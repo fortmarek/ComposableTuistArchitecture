@@ -21,9 +21,21 @@ public enum AddRecipeAction: Equatable {
     case currentIngredientChanged(String)
     case addedIngredient
     case nameChanged(String)
+    case addRecipe
+    case addedRecipe(Result<Recipe, CookbookClient.Failure>)
 }
 
 public struct AddRecipeEnvironment {
+    public init(
+        cookbookClient: CookbookClient,
+        mainQueue: AnySchedulerOf<DispatchQueue>
+    ) {
+        self.cookbookClient = cookbookClient
+        self.mainQueue = mainQueue
+    }
+    
+    let cookbookClient: CookbookClient
+    let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
 public let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnvironment> { state, action, environment in
@@ -37,6 +49,18 @@ public let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipe
     case .addedIngredient:
         state.ingredients.append(state.currentIngredient)
         state.currentIngredient = ""
+        return .none
+    case .addRecipe:
+        let recipe = Recipe(id: "", name: state.name, description: "Desc", ingredients: state.ingredients, duration: 10, score: 0, info: "Info")
+        return environment.cookbookClient
+            .addRecipe(recipe)
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map(AddRecipeAction.addedRecipe)
+    case let .addedRecipe(.success(recipe)):
+        return .none
+    case .addedRecipe(.failure):
+        // TODO: handle error
         return .none
     }
 }
