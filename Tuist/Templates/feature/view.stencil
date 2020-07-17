@@ -21,7 +21,7 @@ public struct {{ name }}View: View {
     public var body: some View {
         WithViewStore(
             self.store
-                .scope(state: State.init, action: {{ name }}Action.init)
+                .scope(state: State.init, action: {{ name }}name,Action.init)
         ) { viewStore in
             Text("{{ name }}")
         }

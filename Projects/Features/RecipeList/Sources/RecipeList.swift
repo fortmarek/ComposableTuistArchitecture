@@ -13,11 +13,14 @@ struct RecipeListView: View {
     struct State: Equatable {
         var recipes: IdentifiedArrayOf<Recipe>
         var isActivityIndicatorHidden: Bool
+        var isAddRecipeNavigationLinkActive: Bool
     }
     
     enum Action {
         case recipes
         case deleteRecipes(IndexSet)
+        case tappedOnAddRecipe
+        case isAddRecipeNavigationLinkActiveChanged(Bool)
     }
     
     let store: Store<RecipeListFeatureState, RecipeListFeatureAction>
@@ -41,13 +44,17 @@ struct RecipeListView: View {
                             viewStore.send(.deleteRecipes($0))
                         }
                     }
+                    NavigationLink(
+                        destination: AddRecipeView(store: self.store.scope(state: \.addRecipeState, action: RecipeListFeatureAction.addRecipe)),
+                        isActive: viewStore.binding(get: \.isAddRecipeNavigationLinkActive, send: Action.isAddRecipeNavigationLinkActiveChanged)
+                    ) {
+                        EmptyView()
+                    }
                 }
                 .onAppear { viewStore.send(.recipes) }
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
-                    trailing: NavigationLink(
-                        destination: AddRecipeView(store: self.store.scope(state: \.addRecipeState, action: RecipeListFeatureAction.addRecipe))
-                    ) {
+                    trailing: Button(action: { viewStore.send(.tappedOnAddRecipe) }) {
                         Image(uiImage: Asset.icAdd.image)
                     }
                 )
@@ -63,6 +70,7 @@ extension RecipeListView.State {
     init(recipeListState: RecipeListState) {
         recipes = recipeListState.recipes
         isActivityIndicatorHidden = recipeListState.isLoadingRecipes
+        isAddRecipeNavigationLinkActive = recipeListState.isShowingAddRecipe
     }
 }
 
@@ -73,6 +81,10 @@ extension RecipeListAction {
             self = .recipes
         case let .deleteRecipes(indexSet):
             self = .deleteRecipes(indexSet)
+        case .tappedOnAddRecipe:
+            self = .isShowingAddRecipeChanged(true)
+        case let .isAddRecipeNavigationLinkActiveChanged(value):
+            self = .isShowingAddRecipeChanged(value)
         }
     }
 }

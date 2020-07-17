@@ -7,13 +7,15 @@ import AddRecipe
 typealias RecipeListState = (
     recipes: IdentifiedArrayOf<Recipe>,
     hasLoadedRecipes: Bool,
-    isLoadingRecipes: Bool
+    isLoadingRecipes: Bool,
+    isShowingAddRecipe: Bool
 )
 
 public enum RecipeListAction: Equatable {
     case recipes
     case deleteRecipes(IndexSet)
     case recipesResponse(Result<[Recipe], CookbookClient.Failure>)
+    case isShowingAddRecipeChanged(Bool)
 }
 
 struct RecipeListEnvironment {
@@ -57,5 +59,8 @@ let recipeListReducer = Reducer<RecipeListState, RecipeListAction, RecipeListEnv
             }
         )
         .fireAndForget()
+    case let .isShowingAddRecipeChanged(isShowingAddRecipe):
+        state.isShowingAddRecipe = isShowingAddRecipe
+        return .none
     }
 }

@@ -48,6 +48,7 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
                 return .none
             case let .addedRecipe(.success(recipe)):
                 state.recipes.append(recipe)
+                state.isShowingAddRecipe = false
                 return .none
             }
         }
@@ -64,21 +65,24 @@ public struct RecipeListFeatureState {
         recipes: IdentifiedArrayOf<Recipe> = [],
         hasLoadedRecipes: Bool = false,
         isLoadingRecipes: Bool = false,
+        isShowingAddRecipe: Bool = false,
         addRecipeState: AddRecipeState = AddRecipeState()
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes
         self.isLoadingRecipes = isLoadingRecipes
+        self.isShowingAddRecipe = isShowingAddRecipe
         self.addRecipeState = addRecipeState
     }
     
     var recipes: IdentifiedArrayOf<Recipe>
     var hasLoadedRecipes: Bool
     var isLoadingRecipes: Bool
+    var isShowingAddRecipe: Bool
     
     var recipeList: RecipeListState {
-        get { (recipes, hasLoadedRecipes, isLoadingRecipes) }
-        set { (recipes, hasLoadedRecipes, isLoadingRecipes) = newValue }
+        get { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe) }
+        set { (recipes, hasLoadedRecipes, isLoadingRecipes, isShowingAddRecipe) = newValue }
     }
     
     var addRecipeState: AddRecipeState
