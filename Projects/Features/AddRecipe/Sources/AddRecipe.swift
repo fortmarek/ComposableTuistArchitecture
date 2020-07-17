@@ -3,11 +3,7 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 
-public func makeAddRecipeView(store: Store<AddRecipeFeatureState, AddRecipeFeatureAction>) -> some View {
-    AddRecipeView(store: store)
-}
-
-struct AddRecipeView: View {
+public struct AddRecipeView: View {
     struct State: Equatable {
         let name: String
         let ingredients: [String]
@@ -21,12 +17,15 @@ struct AddRecipeView: View {
         case addRecipeButtonTapped
     }
     
-    let store: Store<AddRecipeFeatureState, AddRecipeFeatureAction>
+    let store: Store<AddRecipeState, AddRecipeAction>
     
-    var body: some View {
+    public init(store: Store<AddRecipeState, AddRecipeAction>) {
+        self.store = store
+    }
+    
+    public var body: some View {
         WithViewStore(
             self.store
-                .scope(state: { $0.addRecipe }, action: AddRecipeFeatureAction.init)
                 .scope(state: State.init, action: AddRecipeAction.init)
         ) { store in
             NavigationView {
@@ -88,9 +87,9 @@ struct AddRecipe_Previews: PreviewProvider {
     static var previews: some View {
         AddRecipeView(
             store: Store(
-                initialState: AddRecipeFeatureState(),
-                reducer: addRecipeFeatureReducer,
-                environment: AddRecipeFeatureEnvironment(
+                initialState: AddRecipeState(),
+                reducer: addRecipeReducer,
+                environment: AddRecipeEnvironment(
                     cookbookClient: .mock(),
                     mainQueue: DispatchQueue.main.eraseToAnyScheduler()
                 )

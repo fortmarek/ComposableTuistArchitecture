@@ -62,7 +62,12 @@ struct RecipeListView: View {
                     }
                     // NavigationLink does not work as a trailing navigationButton
                     NavigationLink(
-                        destination: makeAddRecipeView(store: self.store.scope(state: \.addRecipeFeatureState, action: RecipeListFeatureAction.addRecipe)),
+                        destination: AddRecipeView(
+                            store: self.store.scope(
+                                state: \.addRecipeState,
+                                action: RecipeListFeatureAction.addRecipe
+                            )
+                        ),
                         isActive: viewStore.binding(get: \.isAddRecipeNavigationActive, send: Action.isShowingAddRecipeChanged)
                     ) {
                         EmptyView()

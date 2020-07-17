@@ -1,11 +1,27 @@
 import ComposableArchitecture
 import ComposableTuistArchitectureSupport
 
-struct AddRecipeState: Equatable {
-    var name: String = ""
-    var currentIngredient: String = ""
-    var ingredients: [String] = []
-    var isShowingAddRecipe: Bool = false
+public typealias AddRecipeScreenState = (
+    name: String,
+    currentIngredient: String,
+    ingredients: [String]
+)
+
+public struct AddRecipeState: Equatable {
+    public var name: String = ""
+    public var currentIngredient: String = ""
+    public var ingredients: [String] = []
+    public var isShowingAddRecipe: Bool = false
+    
+    public init(
+        isShowingAddRecipe: Bool = false,
+        addRecipeScreenState: AddRecipeScreenState = ("", "", [])
+    ) {
+        name = addRecipeScreenState.name
+        currentIngredient = addRecipeScreenState.currentIngredient
+        ingredients = addRecipeScreenState.ingredients
+        self.isShowingAddRecipe = isShowingAddRecipe
+    }
 }
 
 public enum AddRecipeAction: Equatable {
@@ -16,12 +32,20 @@ public enum AddRecipeAction: Equatable {
     case addedRecipe(Result<Recipe, CookbookClient.Failure>)
 }
 
-struct AddRecipeEnvironment {
+public struct AddRecipeEnvironment {
+    public init(
+        cookbookClient: CookbookClient,
+        mainQueue: AnySchedulerOf<DispatchQueue>
+    ) {
+        self.cookbookClient = cookbookClient
+        self.mainQueue = mainQueue
+    }
+    
     let cookbookClient: CookbookClient
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
-let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnvironment> { state, action, environment in
+public let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnvironment> { state, action, environment in
     switch action {
     case let .nameChanged(name):
         state.name = name
@@ -49,19 +73,19 @@ let addRecipeReducer = Reducer<AddRecipeState, AddRecipeAction, AddRecipeEnviron
     }
 }
 
-extension AddRecipeFeatureAction {
-    init(_ addRecipeAction: AddRecipeAction) {
-        switch addRecipeAction {
-        case .addIngredient:
-            self = .addRecipe(.addIngredient)
-        case .addRecipe:
-            self = .addRecipe(.addRecipe)
-        case let .nameChanged(name):
-            self = .addRecipe(.nameChanged(name))
-        case let .currentIngredientChanged(ingredient):
-            self = .addRecipe(.currentIngredientChanged(ingredient))
-        case let .addedRecipe(recipe):
-            self = .addRecipe(.addedRecipe(recipe))
-        }
-    }
-}
+//extension AddRecipeFeatureAction {
+//    init(_ addRecipeAction: AddRecipeAction) {
+//        switch addRecipeAction {
+//        case .addIngredient:
+//            self = .addRecipe(.addIngredient)
+//        case .addRecipe:
+//            self = .addRecipe(.addRecipe)
+//        case let .nameChanged(name):
+//            self = .addRecipe(.nameChanged(name))
+//        case let .currentIngredientChanged(ingredient):
+//            self = .addRecipe(.currentIngredientChanged(ingredient))
+//        case let .addedRecipe(recipe):
+//            self = .addRecipe(.addedRecipe(recipe))
+//        }
+//    }
+//}

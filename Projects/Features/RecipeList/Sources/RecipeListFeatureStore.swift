@@ -29,11 +29,11 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
             )
         }
     ),
-    addRecipeFeatureReducer.pullback(
-        state: \.addRecipeFeatureState,
+    addRecipeReducer.pullback(
+        state: \.addRecipeState,
         action: /RecipeListFeatureAction.addRecipe,
         environment: {
-            AddRecipeFeatureEnvironment(
+            AddRecipeEnvironment(
                 cookbookClient: $0.cookbookClient,
                 mainQueue: $0.mainQueue
             )
@@ -60,18 +60,13 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
         switch action {
         case .recipeList:
             return .none
-        case let .addRecipe(addRecipeFeatureAction):
-            switch addRecipeFeatureAction {
-            case let .addRecipe(addRecipeAction):
-                switch addRecipeAction {
-                case .nameChanged, .currentIngredientChanged, .addIngredient, .addRecipe:
-                    return .none
-                case let .addedRecipe(.success(recipe)):
-                    state.recipes.append(recipe)
-                    return .none
-                case .addedRecipe(.failure):
-                    return .none
-                }
+        case let .addRecipe(addRecipeAction):
+            switch addRecipeAction {
+            case .nameChanged, .currentIngredientChanged, .addIngredient, .addRecipe, .addedRecipe(.failure):
+                return .none
+            case let .addedRecipe(.success(recipe)):
+                state.recipes.append(recipe)
+                return .none
             }
         case .recipeDetail:
             return .none
@@ -81,7 +76,7 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
 
 public enum RecipeListFeatureAction {
     case recipeList(RecipeListAction)
-    case addRecipe(AddRecipeFeatureAction)
+    case addRecipe(AddRecipeAction)
     case recipeDetail(RecipeDetailAction)
 }
 
@@ -114,11 +109,11 @@ public struct RecipeListFeatureState {
     
     var addRecipeScreenState: AddRecipeScreenState
     
-    var addRecipeFeatureState: AddRecipeFeatureState {
-        get { AddRecipeFeatureState(isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
+    var addRecipeState: AddRecipeState {
+        get { AddRecipeState(isShowingAddRecipe: isShowingAddRecipe, addRecipeScreenState: addRecipeScreenState) }
         set {
             isShowingAddRecipe = newValue.isShowingAddRecipe
-            addRecipeScreenState = newValue.addRecipeScreenState
+            addRecipeScreenState = (newValue.name, newValue.currentIngredient, newValue.ingredients)
         }
     }
 }
