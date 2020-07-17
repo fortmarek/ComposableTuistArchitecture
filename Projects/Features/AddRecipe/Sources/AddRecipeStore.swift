@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import ComposableTuistArchitectureSupport
 
-public struct AddRecipeState {
+public struct AddRecipeState: Equatable {
     public init(
         name: String = "",
         ingredients: [String] = [],
