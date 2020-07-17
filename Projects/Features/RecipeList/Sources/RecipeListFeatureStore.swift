@@ -49,8 +49,11 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
         .pullback(
             state: \.selectionRecipe,
             action: /RecipeListFeatureAction.recipeDetail,
-            environment: { _ in
-                RecipeDetailEnvironment()
+            environment: {
+                RecipeDetailEnvironment(
+                    cookbookClient: $0.cookbookClient,
+                    mainQueue: $0.mainQueue
+                )
             }
         ),
     Reducer { state, action, _ in
