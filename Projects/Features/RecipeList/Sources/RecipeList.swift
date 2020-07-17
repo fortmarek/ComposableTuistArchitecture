@@ -4,7 +4,6 @@ import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
 import AddRecipe
-import RecipeDetail
 
 public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFeatureAction>) -> some View {
     RecipeListView(store: store)
@@ -46,7 +45,11 @@ struct RecipeListView: View {
                 .onAppear { viewStore.send(.recipes) }
                 .navigationBarTitle("Recipes")
                 .navigationBarItems(
-                    trailing: Image(uiImage: Asset.icAdd.image)
+                    trailing: NavigationLink(
+                        destination: AddRecipeView(store: self.store.scope(state: \.addRecipeState, action: RecipeListFeatureAction.addRecipe))
+                    ) {
+                        Image(uiImage: Asset.icAdd.image)
+                    }
                 )
             }
             if viewStore.isActivityIndicatorHidden {

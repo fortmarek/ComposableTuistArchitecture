@@ -3,7 +3,6 @@ import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
 import AddRecipe
-import RecipeDetail
 
 public struct RecipeListFeatureEnvironment {
     public init(
@@ -33,6 +32,7 @@ public let recipeListFeatureReducer = Reducer<RecipeListFeatureState, RecipeList
 
 public enum RecipeListFeatureAction {
     case recipeList(RecipeListAction)
+    case addRecipe(AddRecipeAction)
 }
 
 public struct RecipeListFeatureState {
@@ -40,11 +40,12 @@ public struct RecipeListFeatureState {
         recipes: IdentifiedArrayOf<Recipe> = [],
         hasLoadedRecipes: Bool = false,
         isLoadingRecipes: Bool = false,
-        recipeDetailState: RecipeDetailState? = nil
+        addRecipeState: AddRecipeState = AddRecipeState()
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes
         self.isLoadingRecipes = isLoadingRecipes
+        self.addRecipeState = addRecipeState
     }
     
     var recipes: IdentifiedArrayOf<Recipe>
@@ -55,4 +56,6 @@ public struct RecipeListFeatureState {
         get { (recipes, hasLoadedRecipes, isLoadingRecipes) }
         set { (recipes, hasLoadedRecipes, isLoadingRecipes) = newValue }
     }
+    
+    var addRecipeState: AddRecipeState
 }
