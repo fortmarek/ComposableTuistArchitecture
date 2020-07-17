@@ -5,11 +5,11 @@ import SwiftUI
 
 public struct AddRecipeView: View {
     struct State: Equatable {
-        
+        let name: String
     }
     
     enum Action {
-        
+        case nameChanged(String)
     }
     
     let store: Store<AddRecipeState, AddRecipeAction>
@@ -23,21 +23,27 @@ public struct AddRecipeView: View {
             self.store
                 .scope(state: State.init, action: AddRecipeAction.init)
         ) { viewStore in
-            
+            VStack(alignment: .center, spacing: 10) {
+                Text("Name of recipe")
+                TextField("Best recipe", text: viewStore.binding(get: \.name, send: Action.nameChanged))
+                
+            }
+            .padding()
         }
     }
 }
 
 extension AddRecipeView.State {
     init(state: AddRecipeState) {
-        
+        name = state.name
     }
 }
 
 extension AddRecipeAction {
     init(action: AddRecipeView.Action) {
         switch action {
-            
+        case let .nameChanged(name):
+            self = .nameChanged(name)
         }
     }
 }
