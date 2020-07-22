@@ -97,7 +97,6 @@ public struct CookbookClient {
     public let recipes: () -> Effect<[Recipe], Failure>
     public let addRecipe: (Recipe) -> Effect<Recipe, Failure>
     public let deleteRecipe: (Recipe) -> Effect<Void, Failure>
-    public let recipeDetail: (Recipe.ID) -> Effect<Recipe, Failure>
     public let rateRecipe: (Recipe.ID, Int) -> Effect<Rating, Failure>
     
     public struct Failure: Error, Equatable {}
@@ -144,16 +143,6 @@ public extension CookbookClient {
                 .mapError { error in Failure() }
                 .eraseToEffect()
         },
-        recipeDetail: { recipeID in
-            let url = URL(string: "https://cookbook.ack.ee/api/v1/recipes/\(recipeID)")!
-            let jsonDecoder = JSONDecoder()
-            
-            return URLSession.shared.dataTaskPublisher(for: url)
-                .map { data, _ in data }
-                .decode(type: Recipe.self, decoder: jsonDecoder)
-                .mapError { error in Failure() }
-                .eraseToEffect()
-        },
         rateRecipe: { recipeID, rating in
             let url = URL(string: "https://cookbook.ack.ee/api/v1/recipes/\(recipeID)/rating")!
             
@@ -194,9 +183,6 @@ public extension CookbookClient {
         deleteRecipe: @escaping (Recipe) -> Effect<Void, Failure> = { _ in
             Effect(value: ())
         },
-        recipeDetail: @escaping (Recipe.ID) -> Effect<Recipe, Failure> = { _ in
-            Effect(value: Recipe(id: "", name: "", description: "", ingredients: [], duration: 0, score: 0, info: ""))
-        },
         rateRecipe: @escaping (Recipe.ID, Int) -> Effect<Rating, Failure> = { recipeID, rating in
             Effect(value: Rating.mock(score: rating, recipe: recipeID))
         }
@@ -205,7 +191,6 @@ public extension CookbookClient {
             recipes: recipes,
             addRecipe: addRecipe,
             deleteRecipe: deleteRecipe,
-            recipeDetail: recipeDetail,
             rateRecipe: rateRecipe
         )
     }
