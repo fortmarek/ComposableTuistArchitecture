@@ -2,8 +2,6 @@ import Foundation
 import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
-import AddRecipe
-import RecipeDetail
 
 typealias RecipeListState = (
     recipes: IdentifiedArrayOf<Recipe>,

@@ -2,8 +2,6 @@ import Foundation
 import ComposableTuistArchitectureSupport
 import ComposableArchitecture
 import Combine
-import AddRecipe
-import RecipeDetail
 
 public struct RecipeListFeatureEnvironment {
     public init(
@@ -39,8 +37,7 @@ public struct RecipeListFeatureState {
     public init(
         recipes: IdentifiedArrayOf<Recipe> = [],
         hasLoadedRecipes: Bool = false,
-        isLoadingRecipes: Bool = false,
-        recipeDetailState: RecipeDetailState? = nil
+        isLoadingRecipes: Bool = false
     ) {
         self.recipes = recipes
         self.hasLoadedRecipes = hasLoadedRecipes

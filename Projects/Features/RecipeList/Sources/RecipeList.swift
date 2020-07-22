@@ -3,8 +3,6 @@ import Combine
 import ComposableArchitecture
 import SwiftUI
 import ComposableTuistArchitectureSupport
-import AddRecipe
-import RecipeDetail
 
 public func makeRecipeListView(store: Store<RecipeListFeatureState, RecipeListFeatureAction>) -> some View {
     RecipeListView(store: store)
