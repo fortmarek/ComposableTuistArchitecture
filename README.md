@@ -19,3 +19,5 @@ if you have any questions about how to combine tuist and Swift Composable Archit
 I'd happy to chat about it 🙂
 
 (you can find me [@marekfort](https://twitter.com/marekfort) or via email which I have stated in my Github profile)
+
+*Note*: The project is only buildable with Xcode >= 14.0
