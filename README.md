@@ -20,4 +20,4 @@ I'd happy to chat about it 🙂
 
 (you can find me [@marekfort](https://twitter.com/marekfort) or via email which I have stated in my Github profile)
 
-*Note*: The project is only buildable with Xcode >= 14.0
+*Note*: The project is only buildable with Xcode >= 12.0
